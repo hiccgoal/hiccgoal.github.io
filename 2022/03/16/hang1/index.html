@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220314215941918.png">
 <meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220315154509482.png">
 <meta property="article:published_time" content="2022-03-16T06:33:32.000Z">
-<meta property="article:modified_time" content="2022-03-16T08:58:30.380Z">
+<meta property="article:modified_time" content="2022-03-16T09:03:16.169Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="读书笔记">
 <meta name="twitter:card" content="summary_large_image">
@@ -344,9 +344,14 @@
 <p>​        离线的推荐算法有不同的研究方向,下面为不同的研究方向对应的预测准确度指标.</p>
 <ul>
 <li><h5 id="评分预测"><a href="#评分预测" class="headerlink" title="评分预测"></a>评分预测</h5><p>学习用户的历史评分,进而预测其在将来看到一个他没有评过分的物品时,会给这个物品评多少分.</p>
-<p>评分预测的预测准确度一般通过均方根误差 (RMSE) 和平均绝对误差 (MAE) 计算.对于测试集$T$中的一个用户$u$和物品$i$,令$r_{ui}$代表用户对物品的实际评分,$\hat{r}<em>{ui}$为预测评分,则 RMSE 定义为：<br>$$<br>RMSE&#x3D;\frac{\sqrt{\sum</em>{u,i\in T}(r_{ui}-\hat{r_{ui}})^2}}{|T|}<br>$$</p>
-</li>
-<li><p>MAE采用绝对值计算预测误差，其定义为：</p>
+<p>评分预测的预测准确度一般通过均方根误差 (RMSE) 和平均绝对误差 (MAE) 计算.对于测试集$T$中的一个用户$u$和物品$i$,令$r_{ui}$代表用户对物品的实际评分,令$\hat{r}_{ui}$为预测评分.</p>
+<ul>
+<li>则RMSE定义为：</li>
+</ul>
+<p>$$<br>RMSE&#x3D;\frac{\sqrt{\sum_{u,i\in T}(r_{ui}-\hat{r_{ui}})^2}}{|T|}<br>$$</p>
+<ul>
+<li>MAE采用绝对值计算预测误差，其定义为：</li>
+</ul>
 </li>
 </ul>
 <p>$$<br>MAE&#x3D;\frac{\sum_{u,i\in T}|r_{ui}-\hat r_{ui}|}{|T|}<br>$$</p>
