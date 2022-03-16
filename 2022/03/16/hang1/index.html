@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220314215941918.png">
 <meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220315154509482.png">
 <meta property="article:published_time" content="2022-03-16T06:33:32.000Z">
-<meta property="article:modified_time" content="2022-03-16T08:50:07.252Z">
+<meta property="article:modified_time" content="2022-03-16T08:55:07.519Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="读书笔记">
 <meta name="twitter:card" content="summary_large_image">
@@ -211,7 +211,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      87 分钟
+      86 分钟
     </span>
   
 
@@ -297,16 +297,27 @@
 <p>​        从上面的步骤可以看到，推荐系统的<strong>离线实验都是在数据集上完成的</strong>，也就是说它<strong>不需要一个实际的系统来供它实验</strong>，而只要有一个从实际系统日志中提取的数据集即可。这种实验方法的<strong>好处是不需要真实用户参与</strong>，<strong>可以直接快速地计算出来，从而方便、快速地测试大量不同的算法。</strong>主要缺点是无法获得很多商业上关注的指标，如点击率、转化率等，而找到和商业指标非常相关的离线指标也是很困难的事情。表1-2简单总结了离线实验的优缺点点。</p>
 <div align=center><img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220316150237617.png" srcset="/img/loading.gif" lazyload alt="图1-2 推荐系统常用的3种联系用户和物品的方式" style="zoom:50%;" /></div>
 
-<div class="center">
-|           优点           |               缺点               |
-| :----------------------: | :------------------------------: |
-| 不需要对实际系统的控制权 |     无法计算商业上关心的指标     |
-|    不需要用户参与实验    | 离线实验的指标和商业指标存在差距 |
-|          速度快          |                                  |
-</div>
-##### 2. 用户调查
-
-<p>​        离线实验的指标和实际的商业指标存在差距，如预测准确率和用户满意度。因此<strong>准确评测算法需要相对比较真实的环境</strong>，最好的方法就是将算法直接上线测试，但可能会降低用户满意度，因此在上线前需要做一次成为用户调查的测试。</p>
+<table>
+<thead>
+<tr>
+<th align="center">优点</th>
+<th align="center">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">不需要对实际系统的控制权</td>
+<td align="center">无法计算商业上关心的指标</td>
+</tr>
+<tr>
+<td align="center">不需要用户参与实验</td>
+<td align="center">离线实验的指标和商业指标存在差距</td>
+</tr>
+<tr>
+<td align="center">速度快</td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<h5 id="2-用户调查"><a href="#2-用户调查" class="headerlink" title="2. 用户调查"></a>2. 用户调查</h5><p>​        离线实验的指标和实际的商业指标存在差距，如预测准确率和用户满意度。因此<strong>准确评测算法需要相对比较真实的环境</strong>，最好的方法就是将算法直接上线测试，但可能会降低用户满意度，因此在上线前需要做一次成为用户调查的测试。</p>
 <p>​        用户调查需要有一些<strong>真实用户</strong>，让他们在需要测试的推荐系统上完成一些任务。在他们完成任务时，我们需要观察和记录他们的行为，并让他们回答一些问题。最后，我们需要通过分析他们的行为和答案了解测试系统的性能。离线时没有办法评测的与用户主观感受有关的指标都可以通过用户调查获得。</p>
 <p>​        <strong>缺点：</strong>成本很高，很难进行大规模的用户调查，人数较少的用户调查，往往没有统计意义。此外，需要尽量保证测试用户的分布和真实用户的<strong>分布相同</strong>，比如男女各半，以及年龄、活跃度的分布都和真实用户分布尽量相同。用户调查要尽量保证是<strong>双盲实验</strong>，不要让实验人员和用户事先知道测试目标，以免测试受主观成分的影响。（在很多时候设计双盲实验非常困难，因而在测试环境下收集的测试指标可能在真实环境下无法重现。）<br>       <strong>优点：</strong>可以获得体现用户主观感受的指标，在线实验风险很低，出现错误后很容易弥补。</p>
 <h5 id="3-在线实验"><a href="#3-在线实验" class="headerlink" title="3. 在线实验"></a>3. 在线实验</h5><p>​        完成离线实验和用户调查后,可将推荐系统上线做<strong>AB测试</strong>,将其和旧的算法进行比较</p>
