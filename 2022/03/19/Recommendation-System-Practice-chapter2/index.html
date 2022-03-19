@@ -1,0 +1,692 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="第二章 利用用户行为数据本章节代码来源 实现个性化推荐最理想的情况是用户注册的时候主动告诉我们他喜欢什么，但其缺点有三： 1)NLU技术难以理解用户描述兴趣的自然语言. 2)用户的兴趣不断变化,但用户不会不停地更新兴趣描述.  用户不知道自己喜欢什么&#x2F;很难用语言描述自己喜欢什么.因此,需要算法挖掘用户行为数据进而推荐.  啤酒尿布&#x2F;购物车分析的例子就说明了用户行为数据蕴含不是那">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统实践（项亮）第二章笔记">
+<meta property="og:url" content="http://example.com/2022/03/19/Recommendation-System-Practice-chapter2/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="第二章 利用用户行为数据本章节代码来源 实现个性化推荐最理想的情况是用户注册的时候主动告诉我们他喜欢什么，但其缺点有三： 1)NLU技术难以理解用户描述兴趣的自然语言. 2)用户的兴趣不断变化,但用户不会不停地更新兴趣描述.  用户不知道自己喜欢什么&#x2F;很难用语言描述自己喜欢什么.因此,需要算法挖掘用户行为数据进而推荐.  啤酒尿布&#x2F;购物车分析的例子就说明了用户行为数据蕴含不是那">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220316235946240.png">
+<meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220317171752948.png">
+<meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220318205142800.png">
+<meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319120621302.png">
+<meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319183843603.png">
+<meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319191551064.png">
+<meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319200225631.png">
+<meta property="article:published_time" content="2022-03-19T11:52:41.000Z">
+<meta property="article:modified_time" content="2022-03-19T12:35:03.456Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="推荐系统 读书笔记">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220316235946240.png">
+  
+  
+  <title>推荐系统实践（项亮）第二章笔记 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="推荐系统实践（项亮）第二章笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-03-19 19:52" pubdate>
+        2022年3月19日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      25k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      205 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">推荐系统实践（项亮）第二章笔记</h1>
+            
+            <div class="markdown-body">
+              <h1 id="第二章-利用用户行为数据"><a href="#第二章-利用用户行为数据" class="headerlink" title="第二章 利用用户行为数据"></a>第二章 利用用户行为数据</h1><p><a target="_blank" rel="noopener" href="https://github.com/Magic-Bubble/RecommendSystemPractice/tree/master/Chapter2">本章节代码来源</a></p>
+<p>实现个性化推荐<strong>最理想的情况</strong>是用户注册的时候主动告诉我们他喜欢什么，但其缺点有三：</p>
+<p>1)NLU技术难以理解用户描述兴趣的自然语言.</p>
+<p>2)用户的兴趣不断变化,但用户不会不停地更新兴趣描述.</p>
+<ol start="3">
+<li>用户不知道自己喜欢什么&#x2F;很难用语言描述自己喜欢什么.因此,需要算法挖掘用户行为数据进而推荐.</li>
+</ol>
+<p>啤酒尿布&#x2F;购物车分析的例子就说明了用户行为数据蕴含不是那么显而易见的规律,个性化推荐算法的任务就是通过计算机发现这些规律.</p>
+<p>基于用户行为分析的推荐算法是个性化推荐系统的重要算法,学术界一般将这种类型的算法称为协同过滤算法.即用户可以不断地与网站互动,使自己的推荐列表能够不断过滤掉自己不感兴趣的物品来满足自己的需求.</p>
+<h2 id="2-1-用户行为数据简介"><a href="#2-1-用户行为数据简介" class="headerlink" title="2.1 用户行为数据简介"></a>2.1 用户行为数据简介</h2><p>推荐系统会汇总原始日志生成描述用户行为的会话日志.这些日志记录了用户的各种行为,如在电子商务网站中这些行为主要包括网页浏览、点击、评分等.</p>
+<p>用户行为在个性化推荐系统中一般分两种（按明确性分）</p>
+<ul>
+<li>显性反馈行为：明确表示对物品喜好的行为，如评分、喜欢&#x2F;不喜欢等</li>
+<li>隐性反馈行为：不能明确反应，如页面浏览（浏览不一定是喜欢，可能只是因为在首页）</li>
+</ul>
+<p>按反馈的方向分为正反馈（用户行为倾向于喜欢该物品）和负反馈（反之）。</p>
+<p>互联网行为有很多种，用统一的方式表示这些所有行为比较困难。一般不同的数据集包含不同的行为.</p>
+<ul>
+<li>无上下文信息的隐性反馈数据集    每条行为记录包含用户ID,物品ID.数据集Book-Crossing</li>
+<li>无上下文信息的显性反馈数据集    每条行为记录包含用户ID,物品ID和用户对物品的评分</li>
+<li>有上下文信息的隐性反馈数据集    每条行为记录包含用户ID,物品ID和用户对物品产生行为的时间戳.数据集Lastfm</li>
+<li>有上下文信息的显性反馈数据集    每条行为记录包含用户ID,物品ID,评分和时间戳.数据集Netflix Prize提供的就是这种类型的数据集.</li>
+</ul>
+<p>本章使用的都是第一种.</p>
+<h2 id="2-2-用户行为分析"><a href="#2-2-用户行为分析" class="headerlink" title="2.2 用户行为分析"></a>2.2 用户行为分析</h2><p>本节介绍用户行为数据中蕴含的一般规律</p>
+<h4 id="2-2-1-用户活跃度和物品流行度的分布"><a href="#2-2-1-用户活跃度和物品流行度的分布" class="headerlink" title="2.2.1 用户活跃度和物品流行度的分布"></a>2.2.1 用户活跃度和物品流行度的分布</h4><p><strong>长尾分布</strong>——流行度大的物品占物品总数少;活跃度大的用户占用户的比例小</p>
+<h4 id="2-2-2-用户活跃度和物品流行度的关系"><a href="#2-2-2-用户活跃度和物品流行度的关系" class="headerlink" title="2.2.2 用户活跃度和物品流行度的关系"></a>2.2.2 用户活跃度和物品流行度的关系</h4><p>一般认为新用户倾向于浏览热门物品,而活跃用户会逐渐开始浏览冷门物品.</p>
+<p>仅基于用户行为设计的推荐算法一般称为系统过滤算法.协同过滤算法有很多种,如<strong>基于邻域的方法</strong>(neighborhood-based),隐语义模型(latent factor model),基于图的随机游走算法(random walk on graph)</p>
+<p>基于邻域的方法主要包含下面两种算法:</p>
+<ul>
+<li>基于用户的协同过滤算法    给用户推荐和他兴趣相似的其他用户喜欢的物品</li>
+<li><strong>基于物品的协同过滤算法</strong>    给用户推荐和他之前喜欢的物品相似的物品</li>
+</ul>
+<h2 id="2-3-实验设计和算法评测"><a href="#2-3-实验设计和算法评测" class="headerlink" title="2.3 实验设计和算法评测"></a>2.3 实验设计和算法评测</h2><h4 id="2-3-1-数据集"><a href="#2-3-1-数据集" class="headerlink" title="2.3.1 数据集"></a>2.3.1 数据集</h4><p>本实验采用GroupLens提供的中等大小版本的MovieLens数据集.</p>
+<p>这是一个评分数据集(1~5分),包含6000多用户对4000多部电影的100万条评分.</p>
+<p>由于本章研究<strong>隐反馈数据集中的TopN推荐</strong>问题,因此忽略数据集的评分记录(TopN推荐的任务是预测用户会不会评分,而非预测在其准备评分的前提下评多少分).</p>
+<h4 id="2-3-2-实验设计"><a href="#2-3-2-实验设计" class="headerlink" title="2.3.2 实验设计"></a>2.3.2 实验设计</h4><p>使用K_Fold分割数据集</p>
+<p>文件结构:</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><div class="code-wrapper"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></div></td><td class="code"><pre><code class="hljs dns">├── ml-<span class="hljs-number">1m</span>/<br>    ├── movies.dat     // MovieI<span class="hljs-number">D::</span>Titl<span class="hljs-number">e::</span>Genres<br>    ├── ratings.dat    // UserI<span class="hljs-number">D::</span>MovieI<span class="hljs-number">D::</span>Rating<span class="hljs-number">::</span>Timestamp<br>    ├── users.dat      // UserI<span class="hljs-number">D::</span>Gender<span class="hljs-number">::</span>Ag<span class="hljs-number">e::</span>Occupation<span class="hljs-number">::</span>Zip-code<br></code></pre></td></tr></table></figure>
+
+<p><strong>对数据集进行划分:</strong></p>
+<p>本实验使用的是<code>ratings.dat</code>文件,首先对其进行预处理:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> random<br><span class="hljs-keyword">import</span> math<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><br><span class="hljs-comment"># 定义装饰器，监控运行时间</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">timmer</span>(<span class="hljs-params">func</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">wrapper</span>(<span class="hljs-params">*args, **kwargs</span>):<br>        start_time = time.time()<br>        res = func(*args, **kwargs)<br>        stop_time = time.time()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Func %s, run time: %s&#x27;</span> % (func.__name__, stop_time - start_time))<br>        <span class="hljs-keyword">return</span> res<br>    <span class="hljs-keyword">return</span> wrapper<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 处理数据:</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Dataset</span>():<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, fp</span>):<br>        <span class="hljs-comment"># fp: data file path</span><br>        self.data = self.loadData(fp)<br>    <br><span class="hljs-meta">    @timmer</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">loadData</span>(<span class="hljs-params">self, fp</span>):<br>        data = []<br>        <span class="hljs-keyword">for</span> l <span class="hljs-keyword">in</span> <span class="hljs-built_in">open</span>(fp):<br>            data.append(<span class="hljs-built_in">tuple</span>(<span class="hljs-built_in">map</span>(<span class="hljs-built_in">int</span>, l.strip().split(<span class="hljs-string">&#x27;::&#x27;</span>)[:<span class="hljs-number">2</span>])))<br>        <span class="hljs-keyword">return</span> data<br>    <br><span class="hljs-meta">    @timmer</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">splitData</span>(<span class="hljs-params">self, M, k, seed=<span class="hljs-number">1</span></span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">        :params: data, 加载的所有(user, item)数据条目</span><br><span class="hljs-string">        :params: M, 划分的数目，最后需要取M折的平均</span><br><span class="hljs-string">        :params: k, 本次是第几次划分，k~[0, M)</span><br><span class="hljs-string">        :params: seed, random的种子数，对于不同的k应设置成一样的</span><br><span class="hljs-string">        :return: train, test</span><br><span class="hljs-string">        &#x27;&#x27;&#x27;</span><br>        train, test = [], []<br>        random.seed(seed)<br>        <span class="hljs-keyword">for</span> user, item <span class="hljs-keyword">in</span> self.data:<br>            <span class="hljs-comment"># 这里与书中的不一致，本人认为取M-1较为合理，因randint是左右都覆盖的</span><br>            <span class="hljs-keyword">if</span> random.randint(<span class="hljs-number">0</span>, M-<span class="hljs-number">1</span>) == k:  <br>                test.append((user, item))<br>            <span class="hljs-keyword">else</span>:<br>                train.append((user, item))<br><br>        <span class="hljs-comment"># 处理成字典的形式，user-&gt;set(items)</span><br>        <span class="hljs-keyword">def</span> <span class="hljs-title function_">convert_dict</span>(<span class="hljs-params">data</span>):<br>            data_dict = &#123;&#125;<br>            <span class="hljs-keyword">for</span> user, item <span class="hljs-keyword">in</span> data:<br>                <span class="hljs-keyword">if</span> user <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> data_dict:<br>                    data_dict[user] = <span class="hljs-built_in">set</span>()<br>                data_dict[user].add(item)<br>            data_dict = &#123;k: <span class="hljs-built_in">list</span>(data_dict[k]) <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> data_dict&#125;<br>            <span class="hljs-keyword">return</span> data_dict<br><br>        <span class="hljs-keyword">return</span> convert_dict(train), convert_dict(test)<br></code></pre></td></tr></table></figure>
+
+<p>每次实验选取不同的$k(0\leq k\leq M-1)$和<strong>相同的seed</strong>，由于相同的seed产生的随机数序列一样，且范围在$0\sim M-1$，当选取不同的$k$时,得到的test也不同,且test和$k$一一对应,因此能得到$M$个训练&#x2F;测试集.</p>
+<p>这样做是为了防止某次实验过拟合.</p>
+<p>经上述步骤处理后数据格式如下,表示用户ID1看过的电影为ID608,ID3114,ID1246.用户ID2看过的是ID1537和ID2628.</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs yaml">&#123;<span class="hljs-attr">1:</span> [<span class="hljs-number">608</span>, <span class="hljs-number">3114</span>, <span class="hljs-number">1246</span>], <span class="hljs-attr">2:</span> [<span class="hljs-number">1537</span>, <span class="hljs-number">2628</span>]&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="2-3-3-评测指标"><a href="#2-3-3-评测指标" class="headerlink" title="2.3.3 评测指标"></a>2.3.3 评测指标</h4><p>对用户$u$推荐$N$个物品(记为$R(U)$),令该用户在测试集上喜欢的物品集合为$T(U)$,可通过$precision$和$recall$评测算法精度:</p>
+<ul>
+<li><p>召回率:label中的评分记录有多少在预测的推荐列表中,因此分母是label中的正样本数.</p>
+</li>
+<li><p>准确率:预测的推荐列表中有多少是发生过的评分记录</p>
+</li>
+</ul>
+<p>e.g.$+$表示label&#x2F;predict中用户喜欢的物品</p>
+<img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220316235946240.png" srcset="/img/loading.gif" lazyload alt="image-20220316235946240" style="zoom:50%;" />
+
+<p>此例有:</p>
+<p>$|U|&#x3D;1(用户总数),N&#x3D;7(推荐列表长度,在这里假设label长度也是7)$,</p>
+<p>$R(U)\cap T(U)&#x3D;4,R(U)&#x3D;7,T(U)&#x3D;5$</p>
+<p>$\Rightarrow recall&#x3D;\frac{\sum_{u\in U}|R(U)\cap T(U)|}{\sum_{u\in U}T(U)}&#x3D;\frac{4}{5},precision&#x3D;\frac{\sum_{u\in U}|R(U)\cap T(U|}{\sum_{u\in U}R(U)}&#x3D;\frac{4}{7}$</p>
+<p>再次强调,该实验的目的是<strong>预测用户会不会评分</strong></p>
+<ul>
+<li><p>覆盖率$Coverage&#x3D;\frac{\cup_{u\in U}R(U)}{|I|}$</p>
+</li>
+<li><p>新颖度,在这里使用平均流行度<strong>度量</strong>推荐结果的新颖度,平均流行度越高,新颖度越低.</p>
+</li>
+</ul>
+<p>由于物品流行度分布满足长尾分布,因此在计算平均流行度时对每个物品的流行度取对数,使流行度平均值更加稳定.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Metric</span>():<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, train, test, GetRecommendation</span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">        :params: train, 训练数据</span><br><span class="hljs-string">        :params: test, 测试数据</span><br><span class="hljs-string">        :params: GetRecommendation, 为某个用户获取推荐物品的接口函数</span><br><span class="hljs-string">        &#x27;&#x27;&#x27;</span><br>        self.train = train<br>        self.test = test<br>        self.GetRecommendation = GetRecommendation<br>        self.recs = self.getRec()<br>        <br>    <span class="hljs-comment"># 为test中的每个用户进行推荐</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">getRec</span>(<span class="hljs-params">self</span>):<br>        recs = &#123;&#125;<br>        <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> self.test:<br>            rank = self.GetRecommendation(user)<br>            recs[user] = rank<br>        <span class="hljs-keyword">return</span> recs<br>        <br>    <span class="hljs-comment"># 定义精确率指标计算方式</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">precision</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">all</span>, hit = <span class="hljs-number">0</span>, <span class="hljs-number">0</span><br>        <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> self.test:<br>            test_items = <span class="hljs-built_in">set</span>(self.test[user])<br>            rank = self.recs[user]<br>            <span class="hljs-keyword">for</span> item, score <span class="hljs-keyword">in</span> rank:<br>                <span class="hljs-keyword">if</span> item <span class="hljs-keyword">in</span> test_items:<br>                    hit += <span class="hljs-number">1</span><br>            <span class="hljs-built_in">all</span> += <span class="hljs-built_in">len</span>(rank)<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">round</span>(hit / <span class="hljs-built_in">all</span> * <span class="hljs-number">100</span>, <span class="hljs-number">2</span>)<br>    <br>    <span class="hljs-comment"># 定义召回率指标计算方式</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">recall</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-built_in">all</span>, hit = <span class="hljs-number">0</span>, <span class="hljs-number">0</span><br>        <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> self.test:<br>            test_items = <span class="hljs-built_in">set</span>(self.test[user])<br>            rank = self.recs[user]<br>            <span class="hljs-keyword">for</span> item, score <span class="hljs-keyword">in</span> rank:<br>                <span class="hljs-keyword">if</span> item <span class="hljs-keyword">in</span> test_items:<br>                    hit += <span class="hljs-number">1</span><br>            <span class="hljs-built_in">all</span> += <span class="hljs-built_in">len</span>(test_items)<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">round</span>(hit / <span class="hljs-built_in">all</span> * <span class="hljs-number">100</span>, <span class="hljs-number">2</span>)<br>    <br>    <span class="hljs-comment"># 定义覆盖率指标计算方式</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">coverage</span>(<span class="hljs-params">self</span>):<br>        all_item, recom_item = <span class="hljs-built_in">set</span>(), <span class="hljs-built_in">set</span>()<br>        <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> self.test:<br>            <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> self.train[user]:<br>                all_item.add(item)<br>            rank = self.recs[user]<br>            <span class="hljs-keyword">for</span> item, score <span class="hljs-keyword">in</span> rank:<br>                recom_item.add(item)<br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">round</span>(<span class="hljs-built_in">len</span>(recom_item) / <span class="hljs-built_in">len</span>(all_item) * <span class="hljs-number">100</span>, <span class="hljs-number">2</span>)<br>    <br>    <span class="hljs-comment"># 定义新颖度指标计算方式</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">popularity</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># 计算物品的流行度</span><br>        item_pop = &#123;&#125;<br>        <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> self.train:<br>            <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> self.train[user]:<br>                <span class="hljs-keyword">if</span> item <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> item_pop:<br>                    item_pop[item] = <span class="hljs-number">0</span><br>                item_pop[item] += <span class="hljs-number">1</span><br><br>        num, pop = <span class="hljs-number">0</span>, <span class="hljs-number">0</span><br>        <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> self.test:<br>            rank = self.recs[user]<br>            <span class="hljs-keyword">for</span> item, score <span class="hljs-keyword">in</span> rank:<br>                <span class="hljs-comment"># 取对数，防止因长尾问题带来的被流行物品所主导</span><br>                pop += math.log(<span class="hljs-number">1</span> + item_pop[item])<br>                num += <span class="hljs-number">1</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-built_in">round</span>(pop / num, <span class="hljs-number">6</span>)<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">eval</span>(<span class="hljs-params">self</span>):<br>        metric = &#123;<span class="hljs-string">&#x27;Precision&#x27;</span>: self.precision(),<br>                  <span class="hljs-string">&#x27;Recall&#x27;</span>: self.recall(),<br>                  <span class="hljs-string">&#x27;Coverage&#x27;</span>: self.coverage(),<br>                  <span class="hljs-string">&#x27;Popularity&#x27;</span>: self.popularity()&#125;<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Metric:&#x27;</span>, metric)<br>        <span class="hljs-keyword">return</span> metric<br></code></pre></td></tr></table></figure>
+
+<h2 id="2-4-基于邻域的算法"><a href="#2-4-基于邻域的算法" class="headerlink" title="2.4 基于邻域的算法"></a>2.4 基于邻域的算法</h2><p>分为两种,基于<strong>用户</strong>的协同过滤算法和基于<strong>物品</strong>的协同过滤算法</p>
+<h4 id="2-4-1-基于用户的协同过滤算法-UserCF"><a href="#2-4-1-基于用户的协同过滤算法-UserCF" class="headerlink" title="2.4.1 基于用户的协同过滤算法(UserCF)"></a>2.4.1 基于用户的协同过滤算法(UserCF)</h4><h5 id="1-基础算法"><a href="#1-基础算法" class="headerlink" title="1. 基础算法"></a>1. 基础算法</h5><p>两个步骤:</p>
+<ol>
+<li>找到和目标用户兴趣相似的用户集合</li>
+<li>找到这个集合中用户喜欢的,且目标用户没听说过的物品推荐给目标用户</li>
+</ol>
+<p>步骤1的关键是计算两个用户的兴趣相似度,而协同算法主要利用行为的相似度计算兴趣的相似度.令$N(u)$表示用户$u$曾经有过正反馈的物品集合,$N(v)$为用户$v$曾经有过正反馈的物品集合.两者的用户相似度可通过下面的$Jaccard$公式计算:<br>$$<br>w_{uv}&#x3D;\frac{|N(u)\cap N(v)|}{|N(u)||N(v)|}<br>$$<br>也可通过余弦相似度计算:<br>$$<br>w_{uv}&#x3D;\frac{|N(u)\cap N(v)|}{\sqrt{|N(u)||N(v)|}}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">UserSimilarity</span>(<span class="hljs-params">train</span>):<br>    W=<span class="hljs-built_in">dict</span>()<br>    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> train.keys():<br>        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> train.keys():<br>            <span class="hljs-keyword">if</span> u==v:<br>                <span class="hljs-keyword">continue</span><br>            W[u][v]=<span class="hljs-built_in">len</span>(train[u]&amp;train[v])<br>            W[u][v]/=math.sqrt(<span class="hljs-built_in">len</span>(train[u])*<span class="hljs-built_in">len</span>(train[v])*<span class="hljs-number">1.0</span>)<br>    <span class="hljs-keyword">return</span> W<br></code></pre></td></tr></table></figure>
+
+<p>这种计算相似度矩阵的方法时间复杂度为$O(|U|*|U|)$,然而大多数用户之间并没有共同购买的商品,即$|N(u)\cap N(v)|&#x3D;0$,这会加长计算时间.</p>
+<p>下面这种计算相似度的算法首先建立物品到用户的<strong>倒查表</strong>,对于每个物品,保存对该物品产生过行为的<strong>用户列表</strong>.然后建立矩阵$C_{|U|\times |V|}$.该矩阵的每个元素代表两个用户间共同交互物品的个数,即$|N(u)\cap N(v)|$,可以先计算出$|N(u)\cap N(v)|\neq 0$的用户对$(u,v)$,然后再对这种情况除以$\sqrt{|N(u)||N(v)|}$.</p>
+<div align=center><img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220317171752948.png" srcset="/img/loading.gif" lazyload alt="图2-7 物品-用户列表" style="zoom: 70%;" /></div>
+
+<p>如上图,对于物品$a$,用户$A,B$都对其产生过行为,因此将$C[A][B]$和$C[B][A]$加1,以此类推.得到完整的$C$后,除以分母得到$W$.</p>
+<p>得到用户间相似度矩阵$W$后,$\ UserCF$算法会给用户推荐和他兴趣最相似的$K$个用户喜欢的物品,用户$u$对物品$i$的感兴趣程度为:<br>$$<br>p(u,i)&#x3D;\sum_{v\in S(u,k)\cap N(i)}w_{uv}r_{vi}<br>$$<br>$S(u,k)$:与用户$u$兴趣最相似的$k$个人;    $N(i)$:对物品$i$感兴趣的用户集合</p>
+<p>$w_{uv}$:$u,v$两个用户的兴趣相似度;    $r_{vi}$:用户$v$对物品$i$的感兴趣程度</p>
+<p>因此,由上图可得:$\quad p(A,c)&#x3D;w_{AB}+w_{AD}&#x3D;0.7416\qquad p(A,e)&#x3D;w_{AC}+w_{AD}&#x3D;0.7416$</p>
+<p>$UserCF$推荐算法的实现:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 3. 基于用户余弦相似度的推荐</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">UserCF</span>(<span class="hljs-params">train, K, N</span>):<br>    <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    :params: train, 训练数据集</span><br><span class="hljs-string">    :params: K, 超参数，设置取TopK相似用户数目</span><br><span class="hljs-string">    :params: N, 超参数，设置取TopN推荐物品数目</span><br><span class="hljs-string">    :return: GetRecommendation, 推荐接口函数</span><br><span class="hljs-string">    &#x27;&#x27;&#x27;</span><br>    <span class="hljs-comment"># 计算item-&gt;user的倒排索引</span><br>    item_users = &#123;&#125;<br>    <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> train:<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> train[user]:<br>            <span class="hljs-keyword">if</span> item <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> item_users:<br>                item_users[item] = []<br>            item_users[item].append(user)<br>    <br>    <span class="hljs-comment"># 计算用户相似度矩阵</span><br>    sim = &#123;&#125;<br>    num = &#123;&#125;<br>    <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> item_users:<br>        users = item_users[item]<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(users)):<br>            u = users[i]<br>            <span class="hljs-keyword">if</span> u <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> num:<br>                num[u] = <span class="hljs-number">0</span><br>            num[u] += <span class="hljs-number">1</span><br>            <span class="hljs-keyword">if</span> u <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> sim:<br>                sim[u] = &#123;&#125;<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(users)):<br>                <span class="hljs-keyword">if</span> j == i: <span class="hljs-keyword">continue</span><br>                v = users[j]<br>                <span class="hljs-keyword">if</span> v <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> sim[u]:<br>                    sim[u][v] = <span class="hljs-number">0</span><br>                sim[u][v] += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> sim:<br>        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> sim[u]:<br>            sim[u][v] /= math.sqrt(num[u] * num[v])<br>    <br>    <span class="hljs-comment"># 按照相似度排序</span><br>    sorted_user_sim = &#123;k: <span class="hljs-built_in">list</span>(<span class="hljs-built_in">sorted</span>(v.items(), \<br>                               key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>], reverse=<span class="hljs-literal">True</span>)) \<br>                       <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> sim.items()&#125;<br>    <br>    <span class="hljs-comment"># 获取接口函数</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">GetRecommendation</span>(<span class="hljs-params">user</span>):<br>        items = &#123;&#125;<br>        seen_items = <span class="hljs-built_in">set</span>(train[user])<br>        <span class="hljs-keyword">for</span> u, _ <span class="hljs-keyword">in</span> sorted_user_sim[user][:K]:<br>            <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> train[u]:<br>                <span class="hljs-comment"># 要去掉用户见过的</span><br>                <span class="hljs-keyword">if</span> item <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> seen_items:<br>                    <span class="hljs-keyword">if</span> item <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> items:<br>                        items[item] = <span class="hljs-number">0</span><br>                    items[item] += sim[user][u]<br>        recs = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">sorted</span>(items.items(), key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>], reverse=<span class="hljs-literal">True</span>))[:N]<br>        <span class="hljs-keyword">return</span> recs<br>    <br>    <span class="hljs-keyword">return</span> GetRecommendation<br></code></pre></td></tr></table></figure>
+
+<p>从$UserCF$的实验结果可得出以下结论:</p>
+<ul>
+<li>RS的精度指标$recall,precision$与$K$不是线性关系</li>
+<li>$K$越大,推荐结果越热门(因为参考了更多人的意见)</li>
+<li>$K$越大,覆盖率越低</li>
+</ul>
+<h5 id="2-用户相似度计算的改进"><a href="#2-用户相似度计算的改进" class="headerlink" title="2. 用户相似度计算的改进"></a>2. 用户相似度计算的改进</h5><p>两个用户对冷门物品采取过同样的行为更能说明他们兴趣的相似度（如果两个人都购买了《新华字典》，很难不能说明他们兴趣相似）。</p>
+<p>$John\ S.\ Breese$提出:<br>$$<br>w_{uv}&#x3D;\frac{\sum_{i\in N(u)\cap N(v)}\frac{1}{log(1+|N(i)|)}}{\sqrt {|N(u)||N|v||}}<br>$$<br>即通过$\frac{1}{log1+|N(i)|}$惩罚用户$u$和$v$共同兴趣列表中热门物品对他们相似度的影响.</p>
+<p>将其称为$User-IIF$算法:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 4. 基于改进的用户余弦相似度的推荐</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">UserIIF</span>(<span class="hljs-params">train, K, N</span>):<br>    <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    :params: train, 训练数据集</span><br><span class="hljs-string">    :params: K, 超参数，设置取TopK相似用户数目</span><br><span class="hljs-string">    :params: N, 超参数，设置取TopN推荐物品数目</span><br><span class="hljs-string">    :return: GetRecommendation, 推荐接口函数</span><br><span class="hljs-string">    &#x27;&#x27;&#x27;</span><br>    <span class="hljs-comment"># 计算item-&gt;user的倒排索引 ...</span><br>    <span class="hljs-comment"># 计算用户相似度矩阵</span><br>    sim = &#123;&#125;<br>    num = &#123;&#125;<br>    <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> item_users:<br>        users = item_users[item]<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(users)):<br>            u = users[i]<br>            <span class="hljs-keyword">if</span> u <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> num:<br>                num[u] = <span class="hljs-number">0</span><br>            num[u] += <span class="hljs-number">1</span><br>            <span class="hljs-keyword">if</span> u <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> sim:<br>                sim[u] = &#123;&#125;<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(users)):<br>                <span class="hljs-keyword">if</span> j == i: <span class="hljs-keyword">continue</span><br>                v = users[j]<br>                <span class="hljs-keyword">if</span> v <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> sim[u]:<br>                    sim[u][v] = <span class="hljs-number">0</span><br>                <span class="hljs-comment"># 相比UserCF，主要是改进了这里</span><br>                sim[u][v] += <span class="hljs-number">1</span> / math.log(<span class="hljs-number">1</span> + <span class="hljs-built_in">len</span>(users))<br>    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> sim:<br>        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> sim[u]:<br>            sim[u][v] /= math.sqrt(num[u] * num[v])<br>    <br>    <span class="hljs-comment"># 按照相似度排序 ...</span><br>    <span class="hljs-comment"># 获取接口函数 ...</span><br>    <span class="hljs-keyword">return</span> GetRecommendation<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Experiment</span>():<br>    <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, M, K, N, fp=<span class="hljs-string">&#x27;../dataset/ml-1m/ratings.dat&#x27;</span>, rt=<span class="hljs-string">&#x27;UserCF&#x27;</span></span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">        :params: M, 进行多少次实验</span><br><span class="hljs-string">        :params: K, TopK相似用户的个数</span><br><span class="hljs-string">        :params: N, TopN推荐物品的个数</span><br><span class="hljs-string">        :params: fp, 数据文件路径</span><br><span class="hljs-string">        :params: rt, 推荐算法类型</span><br><span class="hljs-string">        &#x27;&#x27;&#x27;</span><br>        self.M = M<br>        self.K = K<br>        self.N = N<br>        self.fp = fp<br>        self.rt = rt<br>        self.alg = &#123;<span class="hljs-string">&#x27;Random&#x27;</span>: Random, <span class="hljs-string">&#x27;MostPopular&#x27;</span>: MostPopular, \<br>                    <span class="hljs-string">&#x27;UserCF&#x27;</span>: UserCF, <span class="hljs-string">&#x27;UserIIF&#x27;</span>: UserIIF&#125;<br>    <br>    <span class="hljs-comment"># 定义单次实验</span><br><span class="hljs-meta">    @timmer</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">worker</span>(<span class="hljs-params">self, train, test</span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">        :params: train, 训练数据集</span><br><span class="hljs-string">        :params: test, 测试数据集</span><br><span class="hljs-string">        :return: 各指标的值</span><br><span class="hljs-string">        &#x27;&#x27;&#x27;</span><br>        getRecommendation = self.alg[self.rt](train, self.K, self.N)<br>        metric = Metric(train, test, getRecommendation)<br>        <span class="hljs-keyword">return</span> metric.<span class="hljs-built_in">eval</span>()<br>    <br>    <span class="hljs-comment"># 多次实验取平均</span><br><span class="hljs-meta">    @timmer</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">run</span>(<span class="hljs-params">self</span>):<br>        metrics = &#123;<span class="hljs-string">&#x27;Precision&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;Recall&#x27;</span>: <span class="hljs-number">0</span>, <br>                   <span class="hljs-string">&#x27;Coverage&#x27;</span>: <span class="hljs-number">0</span>, <span class="hljs-string">&#x27;Popularity&#x27;</span>: <span class="hljs-number">0</span>&#125;<br>        dataset = Dataset(self.fp)<br>        <span class="hljs-keyword">for</span> ii <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(self.M):<br>            train, test = dataset.splitData(self.M, ii)<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Experiment &#123;&#125;:&#x27;</span>.<span class="hljs-built_in">format</span>(ii))<br>            metric = self.worker(train, test)<br>            metrics = &#123;k: metrics[k]+metric[k] <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> metrics&#125;<br>        metrics = &#123;k: metrics[k] / self.M <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> metrics&#125;<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Average Result (M=&#123;&#125;, K=&#123;&#125;, N=&#123;&#125;): &#123;&#125;&#x27;</span>.<span class="hljs-built_in">format</span>(\<br>                              self.M, self.K, self.N, metrics))<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 1. random实验</span><br>M, N = <span class="hljs-number">8</span>, <span class="hljs-number">10</span><br>K = <span class="hljs-number">0</span> <span class="hljs-comment"># 为保持一致而设置，随便填一个值</span><br>random_exp = Experiment(M, K, N, rt=<span class="hljs-string">&#x27;Random&#x27;</span>)<br>random_exp.run()<br><span class="hljs-comment"># 2. MostPopular实验</span><br>M, N = <span class="hljs-number">8</span>, <span class="hljs-number">10</span><br>K = <span class="hljs-number">0</span> <span class="hljs-comment"># 为保持一致而设置，随便填一个值</span><br>mp_exp = Experiment(M, K, N, rt=<span class="hljs-string">&#x27;MostPopular&#x27;</span>)<br>mp_exp.run()<br><span class="hljs-comment"># 3. UserCF实验</span><br>M, N = <span class="hljs-number">8</span>, <span class="hljs-number">10</span><br><span class="hljs-keyword">for</span> K <span class="hljs-keyword">in</span> [<span class="hljs-number">5</span>, <span class="hljs-number">10</span>, <span class="hljs-number">20</span>, <span class="hljs-number">40</span>, <span class="hljs-number">80</span>, <span class="hljs-number">160</span>]:<br>    cf_exp = Experiment(M, K, N, rt=<span class="hljs-string">&#x27;UserCF&#x27;</span>)<br>    cf_exp.run()<br><span class="hljs-comment"># 4. UserIIF实验</span><br>M, N = <span class="hljs-number">8</span>, <span class="hljs-number">10</span><br>K = <span class="hljs-number">80</span> <span class="hljs-comment"># 与书中保持一致</span><br>iif_exp = Experiment(M, K, N, rt=<span class="hljs-string">&#x27;UserIIF&#x27;</span>)<br>iif_exp.run()<br></code></pre></td></tr></table></figure>
+
+<h5 id="关于实验的总结"><a href="#关于实验的总结" class="headerlink" title="关于实验的总结"></a><strong>关于实验的总结</strong></h5><ol>
+<li><p>数据集分割的小技巧，用同样的seed</p>
+</li>
+<li><p>各个指标的实现，要注意</p>
+</li>
+<li><p>为每个用户推荐的时候是推荐他们****没有见过****的，因为测试集里面是这样的</p>
+</li>
+<li><p>倒排物品-用户索引，可进行时间优化</p>
+</li>
+<li><p>推荐的时候K和N各代表什么意思，要分开设置，先取TopK，然后取TopN</p>
+</li>
+</ol>
+<p>$UserCF$存在的问题,随着网站的用户数增加,计算用户兴趣矩阵越来越困难,其运算空间复杂度和时间复杂度和用户数的增长近似于平方关系.其次,这种方法很难对推荐结果做出解释.</p>
+<h4 id="2-4-2-基于物品的系统过滤算法-ItemCF"><a href="#2-4-2-基于物品的系统过滤算法-ItemCF" class="headerlink" title="2.4.2 基于物品的系统过滤算法(ItemCF)"></a>2.4.2 基于物品的系统过滤算法(ItemCF)</h4><p>目前业界应用最多的算法</p>
+<h5 id="1-基础算法-1"><a href="#1-基础算法-1" class="headerlink" title="1. 基础算法"></a>1. 基础算法</h5><p>$ItemCF$给用户推荐那些和他们之前喜欢的物品相似的物品.但该算法<strong>并不利用</strong>物品的内容属性计算物品间的相似度,而是通过分析用户的行为记录来计算物品间的相似度.<strong>该算法认为,物品$A$和$B$具有很大的相似度是因为喜欢物品$A$的用户大都也喜欢物品$B$.</strong></p>
+<p>同时该算法可以给推荐结果提供一个合理的解释,例如给用户推荐《深度学习》是因为该用户之前浏览过《机器学习》.</p>
+<p>$ItemCF$算法主要分两步:</p>
+<ol>
+<li><p>计算物品间的相似度</p>
+</li>
+<li><p>利用物品间的相似度和用户的历史行为给用户生成推荐列表</p>
+</li>
+</ol>
+<p><strong>物品相似度的定义:</strong></p>
+<p>我们购物时常能看到”购买了该商品的用户也经常购买的其他物品”,实际上,物品的相似度定义也是如此,喜欢$i$的人中有多少喜欢$j$:<br>$$<br>w_{ij}&#x3D;\frac{|N(i)\cap N(j)|}{|N(i)|}<br>$$<br>$|N(i)|$是喜欢物品$i$的用户数,$|N(i)\cap N(j)|$是同时喜欢物品$i$和$j$的用户数.</p>
+<p><strong>存在的问题</strong>:当$j$是热门商品时,$w_{ij}$接近1，即热门商品$j$和任意的商品$i$相似性都很高,会影响RS挖掘长尾信息.为了避免推荐出热门商品.可用下面的公式.<br>$$<br>w_{ij}&#x3D;\frac{|N(i)\cap N(j)|}{\sqrt{|N(i)||N(j)|}}<br>$$<br>这个公式惩罚了物品$j$的权重,减轻了热门物品会和很多物品相似的可能性.</p>
+<p>从上面的定义可以看到，在协同过滤中两个物品产生相似度是因为它们共同被很多用户喜欢，也就是说每个用户都可以通过他们的历史兴趣列表给物品“贡献”相似度。这里面蕴涵着一个假设，就是每个用户的兴趣都局限在某几个方面，因此<strong>如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因而有很大的相似度.</strong></p>
+<p>得到相似度后,通过以下公式计算用户$u$对一个物品$j$的兴趣:<br>$$<br>p_{uj}&#x3D;\sum_{i\in N(u)\cap S(j,k)}w_{ji}r_{ui}<br>$$<br>$r_{ui}$是用户对物品$i$的兴趣,$w_{ji}$是物品$j$与物品$i$的相似度.$N(u)$为用户$u$喜欢的物品集合,$S(j,k)$是与物品$j$最相似的$k$个物品</p>
+<p>e.g.</p>
+<div align=center><img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220318205142800.png" srcset="/img/loading.gif" lazyload alt="图2-12 一个简单的基于物品推荐的例子" style="zoom: 33%;" /></div>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 1. 基于物品余弦相似度的推荐</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ItemCF</span>(<span class="hljs-params">train, K, N</span>):<br>    <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    :params: train, 训练数据集</span><br><span class="hljs-string">    :params: K, 超参数，设置取TopK相似物品数目</span><br><span class="hljs-string">    :params: N, 超参数，设置取TopN推荐物品数目</span><br><span class="hljs-string">    :return: GetRecommendation, 推荐接口函数</span><br><span class="hljs-string">    &#x27;&#x27;&#x27;</span><br>    <span class="hljs-comment"># 计算物品相似度矩阵</span><br>    sim = &#123;&#125;<br>    num = &#123;&#125;<br>    <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> train:<br>        items = train[user]<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(items)):<br>            u = items[i]<br>            <span class="hljs-keyword">if</span> u <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> num:<br>                num[u] = <span class="hljs-number">0</span><br>            num[u] += <span class="hljs-number">1</span><br>            <span class="hljs-keyword">if</span> u <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> sim:<br>                sim[u] = &#123;&#125;<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(items)):<br>                <span class="hljs-keyword">if</span> j == i: <span class="hljs-keyword">continue</span><br>                v = items[j]<br>                <span class="hljs-keyword">if</span> v <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> sim[u]:<br>                    sim[u][v] = <span class="hljs-number">0</span><br>                sim[u][v] += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> sim:<br>        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> sim[u]:<br>            sim[u][v] /= math.sqrt(num[u] * num[v])<br>    <br>    <span class="hljs-comment"># 按照相似度排序</span><br>    sorted_item_sim = &#123;k: <span class="hljs-built_in">list</span>(<span class="hljs-built_in">sorted</span>(v.items(), \<br>                               key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>], reverse=<span class="hljs-literal">True</span>)) \<br>                       <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> sim.items()&#125;<br>    <br>    <span class="hljs-comment"># 获取接口函数</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">GetRecommendation</span>(<span class="hljs-params">user</span>):<br>        items = &#123;&#125;<br>        seen_items = <span class="hljs-built_in">set</span>(train[user])<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> train[user]:<br>            <span class="hljs-keyword">for</span> u, _ <span class="hljs-keyword">in</span> sorted_item_sim[item][:K]:<br>                <span class="hljs-keyword">if</span> u <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> seen_items:<br>                    <span class="hljs-keyword">if</span> u <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> items:<br>                        items[u] = <span class="hljs-number">0</span><br>                    items[u] += sim[item][u]<br>        recs = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">sorted</span>(items.items(), key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>], reverse=<span class="hljs-literal">True</span>))[:N]<br>        <span class="hljs-keyword">return</span> recs<br>    <br>    <span class="hljs-keyword">return</span> GetRecommendation<br></code></pre></td></tr></table></figure>
+
+<p>实验结果显示:</p>
+<ul>
+<li>精度(准确率和召回率)$\quad ItemCF$推荐结果的精度与$K$不呈正相关或负相关</li>
+<li>流行度$\quad$和$UserCF$不同,$k$对流行度的影响不是正相关的</li>
+<li>覆盖率$\quad K$会降低系统的覆盖率</li>
+</ul>
+<h5 id="2-用户活跃度对物品相似度的影响"><a href="#2-用户活跃度对物品相似度的影响" class="headerlink" title="2. 用户活跃度对物品相似度的影响"></a>2. 用户活跃度对物品相似度的影响</h5><p>假设一个开书店的人买了当当网上80%的书,意味着由于这么一个用户,有80%的书两两之间产生了相似度,也就是说内存里会产生一个很大的稠密矩阵.除此之外.该用户买这些书并非出于自身的兴趣,而且这些书覆盖了很多领域,因此该用户对于他所购买的书的两两相似度的贡献应该远远小于只买了十几本自己喜欢的书的人.</p>
+<p>依旧是$John\ S.\ Breese$提出了$IUF(Inverse\ User\ Frequence)$,即用户活跃度对数的倒数的参数,此时活跃用户对物品相似度的贡献应该小于不活跃的用户.$N(<em>)$表示用户$</em>$有兴趣的物品集合.<br>$$<br>w_{ij}&#x3D;\frac{\sum_{u\in N(i)\cap N(j)}\frac{1}{log(1+|N(u)|)}}{\sqrt {|N(i)||N|j||}}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 只需要把上面的sim[u][v] += 1改为</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ItemIUF</span>(<span class="hljs-params">train, K, N</span>):<br>    <span class="hljs-comment"># ...</span><br>	sim[u][v] += <span class="hljs-number">1</span> / math.log(<span class="hljs-number">1</span> + <span class="hljs-built_in">len</span>(items))<br>    <span class="hljs-comment"># ...</span><br></code></pre></td></tr></table></figure>
+
+<p>在实际计算中,为了避免相似矩阵过于稠密,一般直接忽略该兴趣列表.</p>
+<p>将这种算法记为$ItemCF-IUF$,实验结果显示它和$ItemCF$的精度类似,但提高了覆盖率,降低了准确度.</p>
+<h5 id="3-物品相似度的归一化"><a href="#3-物品相似度的归一化" class="headerlink" title="3. 物品相似度的归一化"></a>3. 物品相似度的归一化</h5><p>将$ItemCF$的相似度矩阵按最大值归一化能够提高推荐的准确率,覆盖率和多样性.<br>$$<br>w_{ij}’&#x3D;\frac{w_{ij}}{\mathop{max}\limits_{j}\ w_{ij}}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 3. 基于归一化的物品余弦相似度的推荐</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ItemCF_Norm</span>(<span class="hljs-params">train, K, N</span>):<br>    <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    :params: train, 训练数据集</span><br><span class="hljs-string">    :params: K, 超参数，设置取TopK相似物品数目</span><br><span class="hljs-string">    :params: N, 超参数，设置取TopN推荐物品数目</span><br><span class="hljs-string">    :return: GetRecommendation, 推荐接口函数</span><br><span class="hljs-string">    &#x27;&#x27;&#x27;</span><br>    <span class="hljs-comment"># 计算物品相似度矩阵...    </span><br>    <span class="hljs-comment"># 对相似度矩阵进行按行归一化</span><br>    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> sim:<br>        s = <span class="hljs-number">0</span><br>        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> sim[u]:<br>            s += sim[u][v]<br>        <span class="hljs-keyword">if</span> s &gt; <span class="hljs-number">0</span>:<br>            <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> sim[u]:<br>                sim[u][v] /= s<br>    <br>    <span class="hljs-comment"># 按照相似度排序 ...</span><br>    <span class="hljs-comment"># 获取接口函数 ...</span><br>    <span class="hljs-keyword">return</span> GetRecommendation<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># 1. ItemCF实验</span><br>M, N = <span class="hljs-number">8</span>, <span class="hljs-number">10</span><br><span class="hljs-keyword">for</span> K <span class="hljs-keyword">in</span> [<span class="hljs-number">5</span>, <span class="hljs-number">10</span>, <span class="hljs-number">20</span>, <span class="hljs-number">40</span>, <span class="hljs-number">80</span>, <span class="hljs-number">160</span>]:<br>    cf_exp = Experiment(M, K, N, rt=<span class="hljs-string">&#x27;ItemCF&#x27;</span>)<br>    cf_exp.run()<br><span class="hljs-comment"># 2. ItemIUF实验</span><br>M, N = <span class="hljs-number">8</span>, <span class="hljs-number">10</span><br>K = <span class="hljs-number">10</span> <span class="hljs-comment"># 与书中保持一致</span><br>iuf_exp = Experiment(M, K, N, rt=<span class="hljs-string">&#x27;ItemIUF&#x27;</span>)<br>iuf_exp.run()<br><span class="hljs-comment"># 3. ItemCF-Norm实验</span><br>M, N = <span class="hljs-number">8</span>, <span class="hljs-number">10</span><br>K = <span class="hljs-number">10</span> <span class="hljs-comment"># 与书中保持一致</span><br>norm_exp = Experiment(M, K, N, rt=<span class="hljs-string">&#x27;ItemCF-Norm&#x27;</span>)<br>norm_exp.run()<br></code></pre></td></tr></table></figure>
+
+<p>一般来说，物品总是属于很多不同的类，每一类中的物品联系比较紧密。假设在一个电影网站中，有两种电影——纪录片和动画片。那么，ItemCF算出来的相似度一般是纪录片和纪录片的相似度或者动画片和动画片的相似度大于纪录片和动画片的相似度。<strong>但是</strong>纪录片之间的相似度和动画片之间的相似度却不一定相同。假设物品分为两类——A和B，A类物品之间的相似度为0.5，B类物品之间的相似度为0.6，而A类物品和B类物品之间的相似度是0.2。在这种情况下，如果一个用户喜欢了5个A类物品和5个B类物品，用ItemCF给他进行推荐，推荐的就都是B类物品，因为B类物品之间的相似度大。但如果归一化之后，A类物品之间的相似度变成了1，B类物品之间的相似度也是1，那么这种情况下，用户如果喜欢5个A类物品和5个B类物品，那么他的推荐列表中A类物品和B类物品的数目也应该是大致相等的。从这个例子可以看出，相似度的归一化可以提高推荐的多样性。</p>
+<p>那么，对于两个不同的类，什么样的类其类内物品之间的相似度高或者低?</p>
+<p>一般来说，热门的类其类内物品相似度一般比较大。如果不进行归一化，就会推荐比较热门的类里面的物品，而这些物品也是比较热门的。因此，推荐的覆盖率就比较低。相反，如果进行相似度的归一化，则可以提高推荐系统的覆盖率。</p>
+<p>实验结果显示归一化提高了ItemCF的各项指标。</p>
+<h4 id="2-4-3-UserCF和ItemCF的比较"><a href="#2-4-3-UserCF和ItemCF的比较" class="headerlink" title="2.4.3 UserCF和ItemCF的比较"></a>2.4.3 UserCF和ItemCF的比较</h4><p>$UserCF$是推荐系统领域较为古老的算法，1992年就已经在电子邮件的个性化推荐系统Tapestry中得到了应用，1994年被GroupLens用来实现新闻的个性化推荐，后来被著名的文章分享网站Digg用来给用户推荐个性化的网络文章。ltemCF则是相对比较新的算法，在著名的电子商务网站亚马逊和DVD租赁网站Netflix中得到了广泛应用。为什么Digg使用UserCF，而亚马逊网使用ltemCF呢？<br>首先回顾一下UserCF算法和ItemCF算法的推荐原理。UserCF给用户推荐那些和他有共同兴趣爱好的用户喜欢的物品，而ItemCF给用户推荐那些和他之前喜欢的物品类似的物品。从这个算法的原理可以看到，UserCF的推荐结果着重于反映和用户兴趣相似的小群体的热点，而ItemCF的推荐结果着重于维系用户的历史兴趣。换句话说，UserCF的推荐更社会化，反映了用户所在的小型兴趣群体中物品的热门程度，而ltemCF的推荐更加个性化，反映了用户自己的兴趣传承。</p>
+<p>在新闻网站中，用户的兴趣不是特别细化，绝大多数用户都喜欢看热门的新闻。即使是个性化，也是比较粗粒度的，比如有些用户喜欢体育新闻，有些喜欢社会新闻，而特别细粒度的个性化一般是不存在的。比方说，很少有用户只看某个话题的新闻，主要是因为这个话题不可能保证每天都有新的消息，而这个用户却是每天都要看新闻的。因此，个性化新闻推荐更加强调抓住新闻热点，热门程度和时效性是个性化新闻推荐的重点，而个性化相对于这两点略显次要。因此，UserCF可以给用户推荐和他有相似爱好的一群其他用户今天都在看的新闻，这样在抓住热点和时效性的同时，保证了一定程度的个性化。这是Digg在新闻推荐中使用UserCF的最重要原因。</p>
+<p>UserCF适合用于新闻推荐的另一个原因是从技术角度考量的。因为作为一种物品，新闻的更新非常快，每时每刻都有新内容出现，而ltemCF需要维护一张物品相关度的表，如果物品更新很快，那么这张表也需要很快更新，这在技术上很难实现。绝大多数物品相关度表都只能做到一天一次更新，这在新闻领域是不可以接受的。而UserCF只需要用户相似性表，虽然UserCF对于新用户也需要更新相似度表，但在新闻网站中，物品的更新速度远远快于新用户的加入速度，而且对于新用户，完全可以给他推荐最热门的新闻，因此UserCF显然是利大于弊。</p>
+<p>但是，在图书、电子商务和电影网站，比如亚马逊、豆瓣、Netflix中，ItemCF则能极大地发挥优势。首先，在这些网站中，用户的兴趣是比较固定和持久的。一个技术人员可能都是在购买技术方面的书，而且他们对书的热门程度并不是那么敏感，事实上越是资深的技术人员，他们看的书就越可能不热门。此外，这些系统中的用户大都不太需要流行度来辅助他们判断一个物品的好坏，而是可以通过自己熟悉领域的知识自己判断物品的质量。因此，这些网站中个性化推荐的任务是帮助用户发现和他研究领域相关的物品。因此，ItemCF算法成为了这些网站的首选算法。</p>
+<p>此外，这些网站的物品更新速度不会特别快，一天一次更新物品相似度矩阵对它们来说不会造成太大的损失，是可以接受的。</p>
+<p>同时，从技术上考虑，UserCF需要维护一个用户相似度的矩阵，而ItemCF需要维护一个物品相似度矩阵。从存储的角度说，如果用户很多，那么维护用户兴趣相似度矩阵需要很大的空间，同理，如果物品很多，那么维护物品相似度矩阵代价较大。</p>
+<p>在早期的研究中，大部分研究人员都是让少量的用户对大量的物品进行评价，然后研究用户兴趣的模式。那么，对于他们来说，因为用户很少，计算用户兴趣相似度是最快也是最简单的方法。但在实际的互联网中，用户数目往往非常庞大，而在图书、电子商务网站中，物品的数目则是比较少的。此外，物品的相似度相对于用户的兴趣一般比较稳定，因此使用ltemCF是比较好的选择。当然，新闻网站是个例外，在那儿，物品的相似度变化很快，物品数目庞大，相反用户兴趣则相对固定（都是喜欢看热门的），所以新闻网站的个性化推荐使用UserCF算法的更多。</p>
+<p><img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319120621302.png" srcset="/img/loading.gif" lazyload alt="image-20220319120621302"></p>
+<p><strong>该实验结果显示:$ItemCF$算法的覆盖率和新颖度没$UserCF$高,下一节会介绍如何对前者进行改进.</strong></p>
+<p>需要指出的是，离线实验的性能在选择推荐算法时并不起决定作用。首先应该满足产品的需求，比如如果需要提供推荐解释，那么可能得选择$ltemCF$算法。其次，需要看实现代价，比如若用户太多，很难计算用户相似度矩阵，这个时候可能不得不抛弃$UserCF$算法。最后，离线指标和点击率等在线指标不一定成正比。而且，这里对比的是最原始的$UserCF$和$ItemCF$算法，这两种算法都可以进行各种各样的改进。一般来说，这两种算法经过优化后，最终得到的离线性能是近似的。</p>
+<h5 id="哈利波特问题-原始-ItemCF-算法的局限性"><a href="#哈利波特问题-原始-ItemCF-算法的局限性" class="headerlink" title="哈利波特问题(原始$ItemCF$算法的局限性)"></a>哈利波特问题(原始$ItemCF$算法的局限性)</h5><p>亚马逊网的研究人员在设计ItemCF算法之初发现ltemCF算法计算出的图书相关表存在一个问题，就是很多书都和《哈利波特》相关。也就是说，购买任何一本书的人似乎都会购买《哈利波特》。后来他们研究发现，主要是因为《哈利波特》太热门了，确实是购买任何一本书的人几乎都会购买它。</p>
+<p>回顾:$ItemCF$之前采用的相似度计算公式尽管考虑到了$j$是热门商品会导致的问题,但在实际应用中,$j$依然会活得比较大的相似度.<br>$$<br>w_{ij}&#x3D;\frac{|N(i)\cap N(j)|}{\sqrt{|N(i)||N(j)|}}<br>$$<br><strong>解决方案1:</strong><br>$$<br>w_{ij}&#x3D;\frac{|N(i)\cap N(j)|}{|N(i)|^{1-\alpha}|N(j)|^\alpha} \qquad \alpha\in [0.5,1]<br>$$<br>通过提高$\alpha$,京可以惩罚热门的$j$,如果$\alpha&#x3D;0.5$就是标准的ItemCF算法.</p>
+<p>离线实验结果显示，$\alpha&#x3D;0.5$时才会导致最高的准确率和召回率，而无论$\alpha&lt;0.5$或者$\alpha&gt;0.5$都不会带来这两个指标的提高。但是，$\alpha$越大，覆盖率就越高，并且结果的平均热门程度会降低。因此，通过这种方法可以在适当牺牲准确率和召回率的情况下显著提升结果的覆盖率和新颖性(降低流行度即提高了新颖性).</p>
+<p><strong>解决方案2:</strong></p>
+<p>不过，上述方法还不能彻底地解决哈利波特问题。每个用户一般都会在不同的领域喜欢一种物品。以电视为例，看新闻联播是父辈每天的必修课，他们每天基本就看新闻联播，而且每天不看别的新闻，就看这一种新闻。此外，他们很多都是电视剧迷，都会看央视一套8点的电视剧。那么，最终结果就是黄金时间的电视剧都和新闻联播相似，而新闻联播和其他新闻的相似度很低。<br>上面的问题换句话说就是，<strong>两个不同领域的最热门物品之间往往具有比较高的相似度。这个时候，仅仅靠用户行为数据是不能解决这个问题的，因为用户的行为表示这种物品之间应该相似度很高。</strong>此时，我们只能<strong>依靠引入物品的内容数据</strong>解决这个问题，比如<strong>对不同领域的物品降低权重</strong>等。这些就不是协同过滤讨论的范畴了。</p>
+<h2 id="2-5-隐语义模型"><a href="#2-5-隐语义模型" class="headerlink" title="2.5 隐语义模型"></a>2.5 隐语义模型</h2><p>LFM(latent factor model)隐语义模型最早在文本挖掘领域被提出,用于找到文本的隐含语义.</p>
+<h4 id="2-5-1-基础算法"><a href="#2-5-1-基础算法" class="headerlink" title="2.5.1 基础算法"></a>2.5.1 基础算法</h4><p>细节可以看<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/108369470">这篇文章</a></p>
+<p>核心思想是通过隐含特征(latent factor)联系用户兴趣和物品.与$UserCF$和$ItemCF$不同,这种方法不依赖于共同评分矩阵,他将用户和物品分别映射到某种真实含义未知的特征向量(也就是说向量每个维度的意义并不能人为给定).在预测时,对于任意一个空白评分的位置,就能通过两个向量的内积进行计算.</p>
+<p>LFM通过下式计算用户$u$对物品$i$的兴趣:<br>$$<br>Preference(u,i)&#x3D;r_{ui}&#x3D;p_u^Tq_i&#x3D;\sum_{k&#x3D;1}^Kp_{u,k}\ q_{i,k}<br>$$<br>$p_{u,k}\ q_{i,k}$是模型的参数,前者度量了用户$u$的兴趣和第$k$个隐类的关系,而$q_{i,k}$度量了第$k$个隐类和物品$i$之间的关系.</p>
+<p>这两个参数的计算需要学习一个训练集才能得到,而且这个训练集需要包含用户喜欢和不喜欢的物品.由于本章主要讨论的是隐性反馈数据集,因此需要生成负样本.</p>
+<p>负样本采样一般需要遵循以下原则:</p>
+<ul>
+<li>对每个用户,要保证正负样本的均衡</li>
+<li>对每个用户采样负样本时,要选取那些很热门,而用户却没有行为的物品</li>
+</ul>
+<p>一般认为,很热门而用户却没有行为更能说明用户对该商品不感兴趣.因为对于冷门的物品,用户可能没发现,所以谈不上是否感兴趣.</p>
+<p>经过采样可以得到一个用户-物品集$K&#x3D;{ (u,i)}$,其中如果$(u,i)$是正样本,则有$r_{ui}&#x3D;1$,否则$r_{ui}&#x3D;0$,然后需要优化以下损失函数来找到最合适的参数$p$和$q$.<br>$$<br>C&#x3D;\sum_{(u,i)\in K}(r_{ui}-\hat r_{ui})^2&#x3D;\sum_{(u,i)\in K}\Big(r_{ui}-\sum_{k&#x3D;1}^Kp_{u,k}\ q_{i,k}\Big)^2+\lambda\Vert p_u \Vert^2+\lambda\Vert q_i \Vert^2<br>$$<br>$\lambda\Vert q_i \Vert^2$是用来防止过拟合的正则化项,$\ \lambda$可通过实验获得.<br>$$<br>\frac{\partial C}{\partial p_{uk}}&#x3D;-2q_{ik}+2\lambda p_{uk}\<br>\frac{\partial C}{\partial q_{ik}}&#x3D;-2p_{uk}+2\lambda q_{ik}\<br>\Rightarrow \<br>p_{uk}&#x3D;p_{uk}+\alpha(q_{ik}-\lambda p_{uk})\<br>q_{ik}&#x3D;q_{ik}+\alpha(p_{uk}-\lambda q_{ik})<br>$$<br>$\alpha$是学习率,为超参数,通过反复实验获得.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm, trange<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">LFM</span>(<span class="hljs-params">train, ratio, K, lr, step, lmbda, N</span>):<br>    <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    :params: train, 训练数据</span><br><span class="hljs-string">    :params: ratio, 负采样的正负比例</span><br><span class="hljs-string">    :params: K, 隐语义个数</span><br><span class="hljs-string">    :params: lr, 初始学习率</span><br><span class="hljs-string">    :params: step, 迭代次数</span><br><span class="hljs-string">    :params: lmbda, 正则化系数</span><br><span class="hljs-string">    :params: N, 推荐TopN物品的个数</span><br><span class="hljs-string">    :return: GetRecommendation, 获取推荐结果的接口</span><br><span class="hljs-string">    &#x27;&#x27;&#x27;</span><br>    <br>    all_items = &#123;&#125;<br>    <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> train:<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> train[user]:<br>            <span class="hljs-keyword">if</span> item <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> all_items:<br>                all_items[item] = <span class="hljs-number">0</span><br>            all_items[item] += <span class="hljs-number">1</span><br>    all_items = <span class="hljs-built_in">list</span>(all_items.items())<br>    items = [x[<span class="hljs-number">0</span>] <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> all_items]<br>    pops = [x[<span class="hljs-number">1</span>] <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> all_items]<br>    <br>    <span class="hljs-comment"># 负采样函数(注意！！！要按照流行度进行采样)</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">nSample</span>(<span class="hljs-params">data, ratio</span>):<br>        new_data = &#123;&#125;<br>        <span class="hljs-comment"># 正样本</span><br>        <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> data:<br>            <span class="hljs-keyword">if</span> user <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> new_data:<br>                new_data[user] = &#123;&#125;<br>            <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> data[user]:<br>                new_data[user][item] = <span class="hljs-number">1</span><br>        <span class="hljs-comment"># 负样本</span><br>        <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> new_data:<br>            seen = <span class="hljs-built_in">set</span>(new_data[user])<br>            pos_num = <span class="hljs-built_in">len</span>(seen)<br>            item = np.random.choice(items, <span class="hljs-built_in">int</span>(pos_num * ratio * <span class="hljs-number">3</span>), pops)<br>            item = [x <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> item <span class="hljs-keyword">if</span> x <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> seen][:<span class="hljs-built_in">int</span>(pos_num * ratio)]<br>            new_data[user].update(&#123;x: <span class="hljs-number">0</span> <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> item&#125;)<br>        <br>        <span class="hljs-keyword">return</span> new_data<br>                <br>    <span class="hljs-comment"># 训练</span><br>    P, Q = &#123;&#125;, &#123;&#125;<br>    <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> train:<br>        P[user] = np.random.random(K)<br>    <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> items:<br>        Q[item] = np.random.random(K)<br>            <br>    <span class="hljs-keyword">for</span> s <span class="hljs-keyword">in</span> trange(step):<br>        data = nSample(train, ratio)<br>        <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> data:<br>            <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> data[user]:<br>                eui = data[user][item] - (P[user] * Q[item]).<span class="hljs-built_in">sum</span>()<br>                P[user] += lr * (Q[item] * eui - lmbda * P[user])<br>                Q[item] += lr * (P[user] * eui - lmbda * Q[item])<br>        lr *= <span class="hljs-number">0.9</span> <span class="hljs-comment"># 调整学习率</span><br>        <br>    <span class="hljs-comment"># 获取接口函数</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">GetRecommendation</span>(<span class="hljs-params">user</span>):<br>        seen_items = <span class="hljs-built_in">set</span>(train[user])<br>        recs = &#123;&#125;<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> items:<br>            <span class="hljs-keyword">if</span> item <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> seen_items:<br>                recs[item] = (P[user] * Q[item]).<span class="hljs-built_in">sum</span>()<br>        recs = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">sorted</span>(recs.items(), key=<span class="hljs-keyword">lambda</span> x: x[<span class="hljs-number">1</span>], reverse=<span class="hljs-literal">True</span>))[:N]<br>        <span class="hljs-keyword">return</span> recs<br>    <br>    <span class="hljs-keyword">return</span> GetRecommendation<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># LFM实验(运行时间较长)</span><br>M, N = <span class="hljs-number">8</span>, <span class="hljs-number">10</span><br><span class="hljs-keyword">for</span> r <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">5</span>, <span class="hljs-number">10</span>, <span class="hljs-number">20</span>]:<br>    exp = Experiment(M, N, ratio=r)<br>    exp.run()<br></code></pre></td></tr></table></figure>
+
+<p>在LFM中,重要的参数有4个:</p>
+<ul>
+<li>隐特征的个数：$F$</li>
+<li>学习率：$\alpha$</li>
+<li>正则化参数：$\lambda$</li>
+<li>负样本&#x2F;正样本比例：$ratio$</li>
+</ul>
+<p>在该实验中,$ratio&gt;10$以后,精度就比较稳定.同时随着负样本数目的增加,覆盖率不断降低,流行度升高.说明该参数控制了推荐算法挖掘长尾的能力.</p>
+<p>当数据非常稀疏时,$LFM$性能会明显下降,甚至低于$UserCF$和$ItemCF$.</p>
+<h4 id="2-5-2-基于LFM实际系统的例子"><a href="#2-5-2-基于LFM实际系统的例子" class="headerlink" title="2.5.2 基于LFM实际系统的例子"></a>2.5.2 基于LFM实际系统的例子</h4><p>Yahoo的研究人员以CTR为优化目标,利用LFM来预测用户是否会单机一个链接,他们将用户历史上对首页上链接的行为记录在作为训练集.</p>
+<p>在新闻推荐中,冷启动问题问题很明显.每天都有大量新新闻,在很短的时间内得到和失去人们的关注.因此实时性很重要.</p>
+<p>但LFM模型在实际使用中很难实现实时的推荐.经典的LFM模型每次训练都需要扫描所有的用户行为记录才能计算出用户隐类向量$p_u$和物品引隐类向量$q_i$,此外,训练也比较费时.实际中往往是一天训练一次.因此不能实时地调整推荐结果来满足用户最近的行为.</p>
+<p>他们的解决方案分为两部分<br>$$<br>r_{ui}&#x3D;x_u^T\cdot y_i+p_u^T\cdot q_i<br>$$<br>用户向量$x_u$可以根据历史行为获得,每天只需计算一次.$y_i$根据物品的内容属性直接生成.$p_u$和$q_i$是根据实时拿到的用户最近几小时的行为训练LFM获得的.</p>
+<p>因此对于一个新加入的物品$i$,可以通过$x_u^T\cdot y_i$估计用户$u$对物品$i$的兴趣,经过几小时后,就能通过$p_u^T\cdot q_i$得到更准确的预测值.</p>
+<h4 id="2-5-3-LFM和基于邻域的方法的比较"><a href="#2-5-3-LFM和基于邻域的方法的比较" class="headerlink" title="2.5.3 LFM和基于邻域的方法的比较"></a>2.5.3 LFM和基于邻域的方法的比较</h4><ul>
+<li><strong>理论基础</strong>    LFM有比较好的理论基础,通过优化设定目标建立最优模型;基于邻域的方法是一种基于统计的方法</li>
+<li><strong>离线计算的空间复杂度</strong>    假设有$M$个用户和$N$个物品.在计算相关表的过程中可能会获得一张比较稠密的临时相关表,例如用户相关表$O(M \ast M)$或物品相关表$O(N\ast N)$,但$LFM$在建模过程中如果是$F$个隐类,那么需要的存储空间是$O(F\ast (M+N))$.</li>
+<li><strong>离线计算的时间复杂度</strong>    假设有$M$个用户,$N$个物品,$K$条用户对物品的行为记录.$UserCF$的时间复杂度为$O(N\ast (K&#x2F;N)^2)$,$ItemCF$的时间复杂度为$O(M\ast (K&#x2F;M)^2)$.$LFM$如果用$F$个隐类,迭代$S$次,复杂度为$O(K\ast F\ast S)$一般情况下$LFM$会稍高一点,但无本质区别.</li>
+<li><strong>在线实时推荐</strong>    $UserCF$和$ltemCF$在线服务算法需要将相关表缓存在内存中，然后可以在线进行实时的预测.$LFM$不能进行在线实时推荐，也就是说，当用户有了新的行为后，他的推荐列表不会发生变化。</li>
+<li><strong>推荐解释</strong>    $ltemCF$算法支持很好的推荐解释，它可以利用用户的历史行为解释推荐结果。但LFM无法提供这样的解释，它计算出的隐类虽然在语义上确实代表了一类兴趣和物品，却很难用自然语言描述并生成解释展现给用户。</li>
+</ul>
+<h2 id="2-6-基于图的模型"><a href="#2-6-基于图的模型" class="headerlink" title="2.6 基于图的模型"></a>2.6 基于图的模型</h2><p>用户行为很容易用二分图表示,因此很多图的算法都可以用到推荐系统中</p>
+<h4 id="2-6-1-用户行为数据的二分图表示"><a href="#2-6-1-用户行为数据的二分图表示" class="headerlink" title="2.6.1 用户行为数据的二分图表示"></a>2.6.1 用户行为数据的二分图表示</h4><p>令$G(V,E)$表示用户物品二分图,$V&#x3D;V_U\cup V_I$由用户顶点集合$V_U$和物品顶点集合$V_I$组成.对于数据集每一个二元组$(u,i)$,图中都有一套对应的边$e(v_u,v_i)$.图2-18是一个用户物品二分图模型,圆形节点代表用户,方形代表物品,边表示用户对物品的行为.</p>
+<div align=center><img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319183843603.png" srcset="/img/loading.gif" lazyload alt="图2-18 用户物品二分图模型" style="zoom:50%;" /></div>
+
+<h4 id="2-6-2-基于图的推荐算法"><a href="#2-6-2-基于图的推荐算法" class="headerlink" title="2.6.2 基于图的推荐算法"></a>2.6.2 基于图的推荐算法</h4><p>此时给用户$u$推荐物品的任务可以转化为度量用户顶点$v_u$和与$v_u$没有边直接相连的物品节点在图上的相关性,相关性越高的物品在推荐列表中的权重就越高.</p>
+<p>图中<strong>顶点的相关性主要取决于下面三个因素:</strong></p>
+<ul>
+<li>两个顶点之间的路径数；</li>
+<li>两个顶点之间路径的长度；</li>
+<li>两个顶点之间的路径经过的顶点.</li>
+</ul>
+<p>而<strong>相关性高的一对顶点一般具有如下特征：</strong></p>
+<ul>
+<li>两个顶点之间有很多路径相连；</li>
+<li>连接两个顶点之间的路径长度都比较短；</li>
+<li>连接两个顶点之间的路径不会经过出度比较大的顶点.</li>
+</ul>
+<p>以下图为例;</p>
+<div align=center><img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319191551064.png" srcset="/img/loading.gif" lazyload alt="图2-19 基于图的推荐算法示例" style="zoom: 50%;" /></div>
+
+<p>用户A和物品c、e没有边相连，但是用户A和物品c有一条长度为3的路径相连，用户A和物品e有两条长度为3的路径相连。那么，顶点A与e之间的相关性要高于顶点A与c，因而物品e在用户A的推荐列表中应该排在物品c之前，因为顶点A与e之间有两条路径——(A,b,C,e)和(A,d,D,e).其中,(A,b,C,e)路径经过的顶点的出度为(3,2,2,2)而(A,d,D,e)路径经过的顶点的出度为(3,2,3,2)。因此,(A,d,D,e)经过了一个出度比较大的顶点D，所以(A,d,D,e)对顶点A与e之间相关性的贡献要小于(A,b,C,e).</p>
+<p>基于上面三个主要因素,有很多计算图中顶点之间相关性的方法,如基于随机游走的$PersonalRank$算法.</p>
+<h5 id="PersonalRank-算法"><a href="#PersonalRank-算法" class="headerlink" title="$PersonalRank$算法"></a>$PersonalRank$算法</h5><p>假设要给用户$u$进行个性化推荐，可以从用户$u$对应的节点$v_u$开始,在用户物品二分图上进行随机游走。游走到任何一个节点时，首先按照概率$\alpha$决定是继续游走，还是停止这次游走并从$v_u$节点开始重新游走。如果决定继续游走，那么就从当前节点指向的节点中按照<strong>均匀分布</strong>随机选择一个节点作为游走下次经过的节点。这样，经过很多次随机游走后，每个物品节点被访问到的概率会<strong>收敛到一个数</strong>。最终的推荐列表中物品的权重就是物品节点的访问概率。<br>如果将上面的描述表示成公式，可以得到如下公式：</p>
+<div align=center><img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319200225631.png" srcset="/img/loading.gif" lazyload alt="" style="zoom: 50%;" /></div>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">PersonalRank</span>(<span class="hljs-params">train, alpha, N</span>):<br>    <span class="hljs-string">&#x27;&#x27;&#x27;</span><br><span class="hljs-string">    :params: train, 训练数据</span><br><span class="hljs-string">    :params: alpha, 继续随机游走的概率</span><br><span class="hljs-string">    :params: N, 推荐TopN物品的个数</span><br><span class="hljs-string">    :return: GetRecommendation, 获取推荐结果的接口</span><br><span class="hljs-string">    &#x27;&#x27;&#x27;</span> <br>    <br>    <span class="hljs-comment"># 构建索引</span><br>    items = []<br>    <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> train:<br>        items.extend(train[user])<br>    id2item = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">set</span>(items))<br>    users = &#123;u: i <span class="hljs-keyword">for</span> i, u <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(train.keys())&#125;<br>    items = &#123;u: i+<span class="hljs-built_in">len</span>(users) <span class="hljs-keyword">for</span> i, u <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(id2item)&#125;<br>    <br>    <span class="hljs-comment"># 计算转移矩阵（注意！！！要按照出度进行归一化）</span><br>    item_user = &#123;&#125;<br>    <span class="hljs-keyword">for</span> user <span class="hljs-keyword">in</span> train:<br>        <span class="hljs-keyword">for</span> item <span class="hljs-keyword">in</span> train[user]:<br>            <span class="hljs-keyword">if</span> item <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> item_user:<br>                item_user[item] = []<br>            item_user[item].append(user)<br>            <br>    data, row, col = [], [], []<br>    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> train:<br>        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> train[u]:<br>            data.append(<span class="hljs-number">1</span> / <span class="hljs-built_in">len</span>(train[u]))<br>            row.append(users[u])<br>            col.append(items[v])<br>    <span class="hljs-keyword">for</span> u <span class="hljs-keyword">in</span> item_user:<br>        <span class="hljs-keyword">for</span> v <span class="hljs-keyword">in</span> item_user[u]:<br>            data.append(<span class="hljs-number">1</span> / <span class="hljs-built_in">len</span>(item_user[u]))<br>            row.append(items[u])<br>            col.append(users[v])<br>            <br>    M = csc_matrix((data, (row, col)), shape=(<span class="hljs-built_in">len</span>(data), <span class="hljs-built_in">len</span>(data)))<br>    <br>    <span class="hljs-comment"># 获取接口函数</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">GetRecommendation</span>(<span class="hljs-params">user</span>):<br>        seen_items = <span class="hljs-built_in">set</span>(train[user])<br>        <span class="hljs-comment"># 解矩阵方程 r = (1-a)r0 + a(M.T)r</span><br>        r0 = [<span class="hljs-number">0</span>] * <span class="hljs-built_in">len</span>(data)<br>        r0[users[user]] = <span class="hljs-number">1</span><br>        r0 = csc_matrix(r0)<br>        r = (<span class="hljs-number">1</span> - alpha) * linalg.inv(eye(<span class="hljs-built_in">len</span>(data)) - alpha * M.T) * r0<br>        r = r.T.toarray()[<span class="hljs-number">0</span>][<span class="hljs-built_in">len</span>(users):]<br>        idx = np.argsort(-r)[:N]<br>        recs = [(id2item[ii], r[ii]) <span class="hljs-keyword">for</span> ii <span class="hljs-keyword">in</span> idx]<br>        <span class="hljs-keyword">return</span> recs<br>    <br>    <span class="hljs-keyword">return</span> GetRecommendation<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># PersonalRank实验</span><br>M, N, alpha = <span class="hljs-number">8</span>, <span class="hljs-number">10</span>, <span class="hljs-number">0.8</span><br>exp = Experiment(M, N, alpha)<br>exp.run()<br></code></pre></td></tr></table></figure>
+
+<p>$PersonalRank$算法有较好的理论解释,但算法复杂度很高.因为在为每个用户进行推荐时，都需要在整个用户物品二分图上进行迭代，直到整个图上的每个顶点的$PR$值收敛。这一过程的时间复杂度非常高，不仅无法在线提供实时推荐，甚至离线生成推荐结果也很耗时。</p>
+<p>解决方案一:减少迭代次数，在收敛之前就停止。这样会影响最终的精度，但一般来说影响不会特别大。</p>
+<p>解决方案二:将$PersonalRank$转化为矩阵的形式。令$M$为用户物品二分图的转移概率矩阵，即：<br>$$<br>M(v,v’)&#x3D;\frac{1}{|out(v)|}<br>$$<br>迭代公式可转化为:<br>$$<br>r&#x3D;(1-\alpha)r_0+\alpha M^T&#x3D;(1-\alpha)(1-\alpha M^T)^{-1}r_0<br>$$<br>这时只需利用稀疏矩阵快速求逆的办法来计算$(1-\alpha M^T)^{-1}$即可.</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F-%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">推荐系统 读书笔记</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/03/16/hang1/">
+                        <span class="hidden-mobile">推荐系统实践（项亮）第一章笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
