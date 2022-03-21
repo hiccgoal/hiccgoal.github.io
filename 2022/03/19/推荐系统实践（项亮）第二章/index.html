@@ -19,7 +19,7 @@
     <meta name="description" content="第二章 利用用户行为数据本章节代码来源 实现个性化推荐最理想的情况是用户注册的时候主动告诉我们他喜欢什么，但其缺点有三： 1)NLU技术难以理解用户描述兴趣的自然语言. 2)用户的兴趣不断变化,但用户不会不停地更新兴趣描述.  用户不知道自己喜欢什么&#x2F;很难用语言描述自己喜欢什么.因此,需要算法挖掘用户行为数据进而推荐.  啤酒尿布&#x2F;购物车分析的例子就说明了用户行为数据蕴含不是那">
 <meta property="og:type" content="article">
 <meta property="og:title" content="推荐系统实践（项亮）第二章笔记">
-<meta property="og:url" content="http://example.com/2022/03/19/Recommendation-System-Practice-chapter2/index.html">
+<meta property="og:url" content="http://example.com/2022/03/19/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E8%B7%B5%EF%BC%88%E9%A1%B9%E4%BA%AE%EF%BC%89%E7%AC%AC%E4%BA%8C%E7%AB%A0/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="第二章 利用用户行为数据本章节代码来源 实现个性化推荐最理想的情况是用户注册的时候主动告诉我们他喜欢什么，但其缺点有三： 1)NLU技术难以理解用户描述兴趣的自然语言. 2)用户的兴趣不断变化,但用户不会不停地更新兴趣描述.  用户不知道自己喜欢什么&#x2F;很难用语言描述自己喜欢什么.因此,需要算法挖掘用户行为数据进而推荐.  啤酒尿布&#x2F;购物车分析的例子就说明了用户行为数据蕴含不是那">
 <meta property="og:locale" content="zh_CN">
@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319191551064.png">
 <meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220319200225631.png">
 <meta property="article:published_time" content="2022-03-19T11:52:41.000Z">
-<meta property="article:modified_time" content="2022-03-19T12:59:14.531Z">
+<meta property="article:modified_time" content="2022-03-20T14:05:01.018Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="读书笔记">
 <meta property="article:tag" content="推荐系统">
@@ -306,7 +306,7 @@
 </li>
 </ul>
 <p>e.g.$+$表示label&#x2F;predict中用户喜欢的物品</p>
-<img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220316235946240.png" srcset="/img/loading.gif" lazyload alt="image-20220316235946240" style="zoom:50%;" />
+<img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220316235946240.png" srcset="/img/loading.gif" lazyload alt="" style="zoom:50%;" />
 
 <p>此例有:</p>
 <p>$|U|&#x3D;1(用户总数),N&#x3D;7(推荐列表长度,在这里假设label长度也是7)$,</p>
@@ -314,7 +314,7 @@
 <p>$\Rightarrow recall&#x3D;\frac{\sum_{u\in U}|R(U)\cap T(U)|}{\sum_{u\in U}T(U)}&#x3D;\frac{4}{5},precision&#x3D;\frac{\sum_{u\in U}|R(U)\cap T(U|}{\sum_{u\in U}R(U)}&#x3D;\frac{4}{7}$</p>
 <p>再次强调,该实验的目的是<strong>预测用户会不会评分</strong></p>
 <ul>
-<li><p>覆盖率$Coverage&#x3D;\frac{\cup_{u\in U}R(U)}{|I|}$</p>
+<li><p>覆盖率$Coverage&#x3D;\frac{\cup_{u\in U}\ R(u)}{|I|}$</p>
 </li>
 <li><p>新颖度,在这里使用平均流行度<strong>度量</strong>推荐结果的新颖度,平均流行度越高,新颖度越低.</p>
 </li>
@@ -526,11 +526,17 @@
                   <article class="post-prev col-6">
                     
                     
+                      <a href="/2022/03/20/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E8%B7%B5%EF%BC%88%E9%A1%B9%E4%BA%AE%EF%BC%89%E7%AC%AC%E4%B8%89%E7%AB%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">推荐系统实践（项亮）第三章</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/03/16/hang1/">
+                      <a href="/2022/03/16/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E8%B7%B5%EF%BC%88%E9%A1%B9%E4%BA%AE%EF%BC%89%E7%AC%AC%E4%B8%80%E7%AB%A0/">
                         <span class="hidden-mobile">推荐系统实践（项亮）第一章笔记</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
