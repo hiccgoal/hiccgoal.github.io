@@ -1,0 +1,560 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="第五章 利用上下文信息用户所处的上下文（context）对推荐效果十分重要，例如时间，地点，心情等。推荐系统不能因为用户夏天喜欢过短袖就在冬天也推荐短袖（时间）。当用户在中关街搜索美食时，推荐的美食大部分都是该地点附近的，也能让用户满意。上下文影响兴趣的例子还有很多，例如上班前-下班后、周内-周末等等。因此，准确了解用户的上下文信息是设计好的推荐系统的关键步骤。 本章主要讨论时间上下文和地点上下文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="推荐系统实践（项亮）第五章">
+<meta property="og:url" content="http://example.com/2022/04/11/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E8%B7%B5%EF%BC%88%E9%A1%B9%E4%BA%AE%EF%BC%89%E7%AC%AC%E4%BA%94%E7%AB%A0/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="第五章 利用上下文信息用户所处的上下文（context）对推荐效果十分重要，例如时间，地点，心情等。推荐系统不能因为用户夏天喜欢过短袖就在冬天也推荐短袖（时间）。当用户在中关街搜索美食时，推荐的美食大部分都是该地点附近的，也能让用户满意。上下文影响兴趣的例子还有很多，例如上班前-下班后、周内-周末等等。因此，准确了解用户的上下文信息是设计好的推荐系统的关键步骤。 本章主要讨论时间上下文和地点上下文">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220413165412311.png">
+<meta property="og:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220413172823407.png">
+<meta property="article:published_time" content="2022-04-11T12:26:06.000Z">
+<meta property="article:modified_time" content="2022-04-14T02:01:34.185Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="推荐系统">
+<meta property="article:tag" content="读书笔记">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220413165412311.png">
+  
+  
+  <title>推荐系统实践（项亮）第五章 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hint.css@2/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.14","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="推荐系统实践（项亮）第五章">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2022-04-11 20:26" pubdate>
+        2022年4月11日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6.7k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      56 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">推荐系统实践（项亮）第五章</h1>
+            
+            <div class="markdown-body">
+              <h1 id="第五章-利用上下文信息"><a href="#第五章-利用上下文信息" class="headerlink" title="第五章 利用上下文信息"></a>第五章 利用上下文信息</h1><p>用户所处的上下文（context）对推荐效果十分重要，例如时间，地点，心情等。推荐系统不能因为用户夏天喜欢过短袖就在冬天也推荐短袖（时间）。当用户在中关街搜索美食时，推荐的美食大部分都是该地点附近的，也能让用户满意。上下文影响兴趣的例子还有很多，例如上班前-下班后、周内-周末等等。因此，准确了解用户的上下文信息是设计好的推荐系统的关键步骤。</p>
+<p>本章主要讨论时间上下文和地点上下文，研究如何给用户生成一个TopN推荐列表，该列表包含了用户在某一时刻或某个地方最可能喜欢的物品。</p>
+<h2 id="5-1-时间上下文信息"><a href="#5-1-时间上下文信息" class="headerlink" title="5.1 时间上下文信息"></a>5.1 时间上下文信息</h2><h3 id="5-1-1-时间效应简介"><a href="#5-1-1-时间效应简介" class="headerlink" title="5.1.1 时间效应简介"></a>5.1.1 时间效应简介</h3><p>时间信息对用户兴趣的影响表现在：</p>
+<ul>
+<li><strong>用户兴趣是变化的</strong>    由于用户自身原因发生的变化，例如程序员随着工作时间的增加，从阅读入门书籍到专业书籍。因此准确预测兴趣应该关注用户最近的行为。当然，这只能针对渐变的用户行为，对于突变的用户行为（中大奖），很难预测准确的兴趣</li>
+<li><strong>物品有生命周期</strong>  电影刚上映可能会更受关注。某个物品也可能受新闻事件的影响变得热门或无人问津。不同系统的物品具有不同的生命周期，例如新闻和电影的生命周期短和长。</li>
+<li><strong>季节效应</strong>  除了春夏秋冬带来的影响，节日也是一种季节效应，例如双十一，奥斯卡颁奖礼等，都可以归为季节效应</li>
+</ul>
+<h3 id="5-1-2-时间效应举例"><a href="#5-1-2-时间效应举例" class="headerlink" title="5.1.2 时间效应举例"></a>5.1.2 时间效应举例</h3><p>略</p>
+<h3 id="5-1-3-系统时间特性的分析"><a href="#5-1-3-系统时间特性的分析" class="headerlink" title="5.1.3 系统时间特性的分析"></a>5.1.3 系统时间特性的分析</h3><p>给定时间信息后，推荐系统从静态系统变为时变的系统，用户行为数据也变成了时间序列。用三元组$(u,i,t)$代表用户$u$在时刻$t$对物品$i$产生过行为。给定数据集，可通过以下信息研究系统时间特性：</p>
+<ul>
+<li><strong>数据集每天独立用户数的增长情况</strong>  不同网站人数增加&#x2F;减少的多少、速度和趋势都不一样，因此要首先确定系统的增长情况</li>
+<li><strong>系统的物品变化情况</strong>  有的网站，例如新闻网站，每天会出现大量新的新闻，但周期都不会太长。可以用<strong>物品平均在线天数</strong>（横坐标可设为流行度），相隔$T$天系统<strong>物品流行度向量的平均相似度</strong>来度量这些特性。</li>
+<li><strong>用户访问情况</strong>  有的网站人们只访问一次，有的每周来一次……可以统计<strong>用户平均活跃天数</strong>，或者相隔$T$天来系统的<strong>用户重合度</strong>度量。</li>
+</ul>
+<h3 id="5-1-4-推荐系统的实时性"><a href="#5-1-4-推荐系统的实时性" class="headerlink" title="5.1.4 推荐系统的实时性"></a>5.1.4 推荐系统的实时性</h3><p>用户兴趣的变化体现在用户不断增加的新行为中（click、like、收藏等），一个实时的推荐系统需要能够实时相应用户新的行为，让推荐列表不断变化，从而满足用户不断变化的兴趣。</p>
+<p>实现推荐系统的实时性，要求：</p>
+<ul>
+<li>用户行为存取的实时性</li>
+<li>推荐算法本身的实时性<ul>
+<li>不能每天都给所有用户离线计算推荐结果，然后在线展示前一天计算出来的结果。因此，要求在每个用户访问推荐系统时，都根据用户这个时间点前的行为实时计算推荐列表</li>
+<li>推荐算法需要平衡用户的近期行为和长期行为，即推荐列表既要反映出用户近期行为所体现的兴趣变化，又不能让推荐列表完全受近期行为的影响，要保证推荐列表对用户兴趣预测的<strong>延续性</strong></li>
+</ul>
+</li>
+</ul>
+<h3 id="5-1-5-推荐算法的时间多样性"><a href="#5-1-5-推荐算法的时间多样性" class="headerlink" title="5.1.5 推荐算法的时间多样性"></a>5.1.5 推荐算法的时间多样性</h3><p>推荐系统每天<strong>推荐结果的变化程度</strong>被称为其时间多样性。提高多样性需要分两步解决：</p>
+<ul>
+<li>首先，保证用户有新行为后，推荐系统能及时调整推荐结果满足用户最近的兴趣，有两种情况：<ul>
+<li>情况一：有的系统会每天离线计算针对所有用户的推荐结果，这类系统无法做到及时调整推荐结果。</li>
+<li>情况二：实时推荐系统使用的算法不同，具有不同的时间多样性。</li>
+</ul>
+</li>
+<li>其次，保证用户没有新的行为时也能经常变化结果，具有一定的时间多样性。有三种思路：<ul>
+<li>生成推荐结果时加入一定的随机性，例如从Top20中<strong>随机</strong>拿出10个展示给用户，或按照推荐物品的权重采样10个结果展示给用户。</li>
+<li>记录用户每天看到的推荐结果，然后在每天给用户进行推荐时，对他前几天看到过很多次的推荐结果进行适当地降权。</li>
+<li>每天给用户使用不同的推荐算法，例如协同过滤，内容过滤等，在用户每天访问时随机挑选一种算法给他进行推荐。</li>
+</ul>
+</li>
+</ul>
+<p>要说明的是，推荐系统首先要保证推荐精度，在此基础上适当地考虑时间多样性。实际应用中需要多次实验才能知道什么程度的时间多样性对系统是最好的。</p>
+<h3 id="5-1-6-时间上下文推荐算法"><a href="#5-1-6-时间上下文推荐算法" class="headerlink" title="5.1.6 时间上下文推荐算法"></a>5.1.6 时间上下文推荐算法</h3><h4 id="1-最近最热门"><a href="#1-最近最热门" class="headerlink" title="1 最近最热门"></a>1 最近最热门</h4><p>最简单的非个性化推荐算法，在原MostPopular的基础上加入时间信息。给定时间$T$，物品$i$最近的流行度$n_i(T)$：<br>$$<br>n_i(T)&#x3D;\sum_{(u,i,t)\in Train,t&lt;T}\frac{1}{1+\alpha(T-t)}\qquad\alpha为时间衰减参数<br>$$</p>
+<h4 id="2-时间上下文相关的ItemCF算法"><a href="#2-时间上下文相关的ItemCF算法" class="headerlink" title="2 时间上下文相关的ItemCF算法"></a>2 时间上下文相关的ItemCF算法</h4><p>第二章介绍过的<a target="_blank" rel="noopener" href="http://hiccgoal.space/2022/03/19/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E8%B7%B5%EF%BC%88%E9%A1%B9%E4%BA%AE%EF%BC%89%E7%AC%AC%E4%BA%8C%E7%AB%A0/#2-4-2-%E5%9F%BA%E4%BA%8E%E7%89%A9%E5%93%81%E7%9A%84%E7%B3%BB%E7%BB%9F%E8%BF%87%E6%BB%A4%E7%AE%97%E6%B3%95-ItemCF">ItemCF算法</a>有两个核心部分：</p>
+<ul>
+<li>通过用户行为离线计算物品相似度矩阵。</li>
+<li>预测时，根据用户的行为和相似度矩阵给用户做个性化推荐。</li>
+</ul>
+<p>加入时间信息后，需要考虑的变化：</p>
+<ul>
+<li><strong>物品相似度</strong>  用户在相隔很短的时间内喜欢的物品具有更高相似度。</li>
+<li><strong>在线推荐</strong>  用户近期行为更能体现其现在的兴趣，因此在预测时，应该加重用户近期行为的权重，推荐那些和他近期喜欢的物品相似的物品。</li>
+</ul>
+<p>ItemCF通过$sim(i,j)&#x3D;\frac{\sum_{u\in N(i)\cap N(j)}1}{\sqrt{|N(i)||N(j)|}}$计算物品间的相似度。</p>
+<p>通过$P(u,i)&#x3D;\sum_{j\in N(u)\cap S(i,k)}sim(i,j)r_{uj}$计算用户$u$对物品$i$的兴趣。$S(i,k)$是与物品$i$最相似的$k$个物品。</p>
+<h5 id="物品相似度计算的改进："><a href="#物品相似度计算的改进：" class="headerlink" title="物品相似度计算的改进："></a><strong>物品相似度计算的改进：</strong></h5><p>得到时间信息后，物品相似度计算可作如下改进：<br>$$<br>sim(i,j)&#x3D;\frac{\sum_{u\in N(i)\cap N(j)}f(|t_{ui}-t_{uj}|)}{\sqrt{|N(i)||N(j)|}}<br>$$<br>$t_{ui}$代表用户对物品$i$产生行为的时间，$f$为数学衰减函数，这里使用$f(|t_{ui}-t_{uj}|)&#x3D;\frac{1}{1+\alpha|t_{ui}-t_{uj}|}$,如果一个系统用户兴趣变化很快，$\alpha$就应该取较大的值，以增加时间对用户兴趣的影响权重。</p>
+<h5 id="预测公式的改进："><a href="#预测公式的改进：" class="headerlink" title="预测公式的改进："></a>预测公式的改进：</h5><p>由于用户现在的行为和其最近的行为关系更大，采用下式改进：<br>$$<br>P(u,i)&#x3D;\sum_{j\in N(u)\cap S(i,k)}sim(i,j)\frac{1}{1+\beta|t_0-t_{uj}|}r_{uj}\qquad\beta为时间衰减参数<br>$$<br>$t_0$是当前时间，$t_{uj}$越接近$t_0$，和物品$j$越相似的物品就会在用户$u$的推荐列表中获得越高的排名。</p>
+<h4 id="3-时间上下文相关的UserCF算法"><a href="#3-时间上下文相关的UserCF算法" class="headerlink" title="3 时间上下文相关的UserCF算法"></a>3 时间上下文相关的UserCF算法</h4><p>加入时间信息后，需要做以下改进</p>
+<ul>
+<li><strong>用户相似度</strong>  之前的算法中，两个用户相似是因为他们对相同的物品产生过行为。加入时间后，当两个用户<strong>同时</strong>喜欢相似的物品，他们的相似度应该更高。</li>
+<li><strong>相似兴趣用户的最近行为</strong>  找到和当前用户$u$兴趣相似的一组用户后，这组用户<strong>最近</strong>的兴趣应该更接近用户$u$当前的兴趣，因此应该给用户推荐和他兴趣相似的用户最近喜欢的物品。</li>
+</ul>
+<p>UserCF通过$w_{uv}&#x3D;\frac{N(u)\cap N(v)}{\sqrt{|N(u)|\cup |N(v)|}}$计算两个用户的兴趣相似度，$N(u)$为用户$u$喜欢的物品集合。</p>
+<p>通过$p(u,i)&#x3D;\sum_{v\in S(u,k)\cap N(i)}w_{uv}r_{vi}$预测用户对物品的兴趣。</p>
+<h5 id="用户相似度计算的改进："><a href="#用户相似度计算的改进：" class="headerlink" title="用户相似度计算的改进："></a>用户相似度计算的改进：</h5><p>$$<br>w_{uv}&#x3D;\frac{\sum_{i\in N(u)\cap N(v)}\frac{1}{1+\alpha|t_{ui}-t_{vi}|}}{\sqrt{|N(u)|\cup |N(v)|}}<br>$$</p>
+<p>即两个用户对同一个物品产生行为的时间间隔越远，这两个用户的兴趣相似度就会越小</p>
+<h5 id="预测公式的改进：-1"><a href="#预测公式的改进：-1" class="headerlink" title="预测公式的改进："></a>预测公式的改进：</h5><p>$$<br>P(u,i)&#x3D;\sum_{v\in N(i)\cap S(u,k)}w_{uv}r_{vi}\frac{1}{1+\alpha|t_0-t_{vi}|}\qquad\beta为时间衰减参数<br>$$</p>
+<p>$N(i)$为喜欢物品$i$的用户集合，$S(u,k)$是与用户$u$最相似的$k$个用户。</p>
+<h3 id="5-1-7-时间段图模型"><a href="#5-1-7-时间段图模型" class="headerlink" title="5.1.7 时间段图模型"></a>5.1.7 时间段图模型</h3><p>时间段图模型$G(U,S_U,I,S_I,E,w,\sigma)$是一个二分图，$U、I、E$分别是用户、物品、边集合，$w(e),\sigma(e)$分别定义了边、顶点的权重。一个<strong>用户时间段节点</strong>$v_{ut}\in S_U$会<strong>和</strong>用户$u$在时刻$t$喜欢的<strong>物品</strong>通过边相连，一个<strong>物品时间段节点</strong>$v_{it}\in s_I$会<strong>和所有</strong>在时刻$t$喜欢物品$i$的<strong>用户</strong>通过边相连。</p>
+<p>其中$E$包含了三种边：</p>
+<p>（1）如果用户$u$对物品$i$有行为，则存在边$e(v_u,v_i)\in E$</p>
+<p>（2）如果用户$u$在$t$时刻对物品$i$有行为，就存在两条边$e(v_{ut,v_i}),e(v_u,v_{it})\in E$</p>
+<p>如下图，用户$A$在时刻2对物品$b$产生了行为，时间段图模型首先会创建4个顶点：用户顶点$A$，用户时间段顶点$A:2$ ，物品顶点$b$，物品时间段顶点$b:2$，然后图会增加3条边，即$(A,b)、(A:2,b)、(A,b:2)$。</p>
+<div align=center><img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220413165412311.png" srcset="/img/loading.gif" lazyload alt="image-20220413165412311" style="zoom:67%;" /></div>
+
+<p>最简单的想法是利用PersonalRank算法，但其需在全图上进行迭代计算，时间复杂度比较高。下面为利用路径融合算法来度量两个顶点的相关性。</p>
+<h4 id="路径融合算法"><a href="#路径融合算法" class="headerlink" title="路径融合算法"></a>路径融合算法</h4><p>一般来讲，图上两个相关性比较高的顶点一般具有以下特征：</p>
+<ul>
+<li>两个顶点之间有很多路径相连</li>
+<li>两个顶点之间的路径比较短</li>
+<li>两个顶点之间的路径不经过出度比较大的顶点</li>
+</ul>
+<p>基于此，路径融合算法首先提取出<strong>两个顶点</strong>之间长度小于一个阈值的所有路径，根据每条路径经过的顶点给这条路径赋予一定的权重，最后将两个顶点之间所有路径的权重之和作为两个顶点的相关度。</p>
+<h5 id="路径权重的定义："><a href="#路径权重的定义：" class="headerlink" title="路径权重的定义："></a>路径权重的定义：</h5><p>假设$P&#x3D;{v_1,v_2,…,v_n}$是连接顶点$v_1$和$v_n$的一条路径，该路径的权重$\Gamma(P)$取决于它所经过的顶点和边：<br>$$<br>\Gamma(P)&#x3D;\sigma(v_n)\prod_{i&#x3D;1}^{n-1}\frac{\sigma(v_i)\cdot w(v_i,v_{i+1})}{|out(v_i)|^\rho}<br>$$</p>
+<p>$\sigma(v_i)\in (0,1],w(v_i,v_{i+1})\in (0,1]$分别定义了顶点和边的权重，由于$\frac{\sigma(v_i)\cdot w(v_i,v_{i+1})}{|out(v_i)|^\rho}\in (0,1]$，因此路径$n$越长，$\Gamma(P)$越小；如果路径经过了出度大的顶点，$\Gamma(P)$也会变小。这里的$\rho$应该是超参数，其值越大，出度大的顶点对整条路径的影响越大，即$\Gamma(P)$越小。</p>
+<h5 id="顶点之间相关度的定义："><a href="#顶点之间相关度的定义：" class="headerlink" title="顶点之间相关度的定义："></a>顶点之间相关度的定义：</h5><p>得到路径权重后，对于顶点$v$和$v’$，令$p(v,v’,K)$为这两个顶点间距离小于$K$的所有路径，则这两个顶点间的相关度可定义为：<br>$$<br>d(v,v’)&#x3D;\sum_{P\in P(v,v’,K)}\Gamma(P)<br>$$<br>对于时间段图模型，所有边的权重都定义为1，即所有$w(v_i,v_{i+1})&#x3D;1$，而顶点的权重$\sigma(v)$为：<br>$$<br>\sigma(v) &#x3D;<br>    \begin{cases}<br>      1-\alpha  &amp; v\in U \<br>      \alpha &amp; v\in S_U\<br>      1-\beta &amp;v\in I\<br>      \beta &amp; v\in S_I<br>    \end{cases}<br>$$<br>$\alpha,\beta\in(0,1]$是两个参数，控制不同顶点的权重。路径融合算法可以基于图上的广度优先搜索算法实现。</p>
+<h3 id="5-1-8-离线实验"><a href="#5-1-8-离线实验" class="headerlink" title="5.1.8 离线实验"></a>5.1.8 离线实验</h3><p><a target="_blank" rel="noopener" href="https://github.com/hiccgoal/RecommendSystemPractice/blob/master/Chapter5/%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E4%B8%8A%E4%B8%8B%E6%96%87%E4%BF%A1%E6%81%AF%E7%9A%84%E6%8E%A8%E8%8D%90.ipynb">代码地址</a></p>
+<p>对<strong>每一个用户</strong>，将物品按照该用户对物品的行为时间从早到晚排序，然后将用户最后一个产生行为的物品作为测试集，并将这之前的用户对物品的行为记录作为训练集。<br>$$<br>Recall@N&#x3D;\frac{\sum_u|R(u,N)\cap T(u)|}{\sum_u|T(u)|}\<br>Precision@N&#x3D;\frac{\sum_u|R(u,N)\cap T(u)|}{\sum_u|R(u,N)|}<br>$$<br>对于时效性很强的数据集，用户兴趣的个性化不明显，即每天最热门的物品已经吸引了绝大多数用户的眼球，而长尾中的物品很少得到用户的关注。</p>
+<h2 id="5-2-地点上下文信息"><a href="#5-2-地点上下文信息" class="headerlink" title="5.2 地点上下文信息"></a>5.2 地点上下文信息</h2><h3 id="基于位置的推荐算法"><a href="#基于位置的推荐算法" class="headerlink" title="基于位置的推荐算法"></a>基于位置的推荐算法</h3><p>这里介绍LARS（Location Aware Recommender System，位置感知推荐系统），这是一个和用户地点相关的推荐系统。</p>
+<p>该系统将物品分为有空间属性的物品（e.g., 餐馆、景点、商店）和无空间属性的物品（e.g.,图书、电影）；将用户也分为有空间属性的（e.g., 比如给出了国家、城市、邮编）和无空间属性的。</p>
+<p>使用的数据集有三种形式：</p>
+<ul>
+<li>（用户，用户位置，物品，评分）（e.g.，MovieLens）</li>
+<li>（用户，物品，物品位置，评分） （e.g.，Dataset—FourSquare）</li>
+<li>（用户，用户位置，物品，物品位置，评分）</li>
+</ul>
+<p>研究员通过分析，发现用户兴趣和地点的两种特征：</p>
+<ul>
+<li>兴趣本地化——不同地方的用户兴趣存在很大区别</li>
+<li>活动本地化——用户往往在附近的地区互动</li>
+</ul>
+<p><strong>对于第一种数据集</strong>（用户，用户位置，物品，评分）——（LARS-U）：</p>
+<p>LARS基本思想是将数据集根据用户的位置划分很多子集，因此数据集会被划分为一个树状结构。在每个叶子结点上通过ItemCF给用户进行推荐。</p>
+<p>可能的问题是叶子结点上的用户数量过少，行为数据过于稀疏，从而无法训练出好的效果。因此可以从根节点出发，利用每个中间节点上的数据生成推荐列表，最后将每个节点的推荐列表进行加权得到最终结果。一般将这种算法成为金字塔模型<strong>（LARS-U）</strong>，显然，深度是该算法的重要指标。</p>
+<p>如下例：假设有一个来自中国江苏南京的用户。我们会首先根据<strong>所有用户</strong>的行为利用某种推荐算法（假设是ItemCF）给他生成推荐列表，然后利用<strong>中国用户</strong>的行为给他生成第二个推荐列表，以此类推，我们用<strong>中国江苏</strong>的用户行为给该用户生成第三个推荐列表，并利用<strong>中国江苏南京</strong>的用户行为给该用户生成第四个推荐列表。然后，我们按照一定的权重将这4个推荐列表线性相加，从而得到给该用户的最终推荐列表。</p>
+<div align=center><img src="https://hicgoal-img.oss-cn-beijing.aliyuncs.com/img/image-20220413172823407.png" srcset="/img/loading.gif" lazyload alt="image-20220413172823407" style="zoom:67%;" /></div>
+
+<p><strong>对于第二种数据集</strong>（用户，物品，物品位置，评分） ——（LARS-T）：</p>
+<p>LARS首先忽略物品的位置信息，利用ItemCF算法计算用户对物品的兴趣$P(u,i)$，但最终物品在用户的推荐列表中的权重为：<br>$$<br>RecScore(u,i)&#x3D;P(u,i)-TravelPenalty(u,i)<br>$$<br>这种考虑了TravelPenalty的算法简称为<strong>（LARS-T）</strong>。$TravelPenalty(u,i)$代表物品$i$的位置对用户$u$的代价，在物品$i$和用户$u$之前评分的“所有物品”间，计算距离的平均值（或最小值）。使用欧氏距离简单但不实际，因此比较好的度量方式是利用交通网络数据将人们需要走的最短距离作为距离度量。</p>
+<p>上式有一个问题：当一个用户仅在海淀区、西城区活动，有必要向他推荐浦东新区的物品吗？换句话说，$RecScore(u,i)$中$i$的范围应该是全部商品吗？</p>
+<p>为了避免<strong>计算</strong>用户对所有物品的$RecScore$，LARS在计算用户$u$对物品$i$的兴趣度$RecScore(u,i)$时，首先对用户每一个曾经评过分的物品（一般是餐馆、商店、景点），找到和他距离小于一个阈值$d$的所有其他物品，然后将这些物品的集合作为候选集，然后再利用上面的公式计算最终的$RecScore$。</p>
+<p><strong>对于第三种数据集</strong>（用户，用户位置，物品，物品位置，评分） ：</p>
+<p>由其定义可知，它相对于第二种数据集增加了用户当前位置这一信息，因此我们应该保证推荐的物品距离用户当前位置比较近，在此基础上再通过历史用户行为推荐离他近且他会感兴趣的物品。</p>
+<h2 id="5-3-总结"><a href="#5-3-总结" class="headerlink" title="5.3 总结"></a>5.3 总结</h2><p>Koren的<a target="_blank" rel="noopener" href="https://cseweb.ucsd.edu//classes/fa17/cse291-b/reading/p447-koren.pdf">Collaborative Filtering with Temporal Dynamics</a>系统总结了各种使用时间信息的方式，包括考虑用户近期行为的影响，考虑时间的周期性等。</p>
+<p>Neal Lathia在<a target="_blank" rel="noopener" href="http://www0.cs.ucl.ac.uk/staff/l.capra/publications/lathia_sigir10.pdf">TemporalDiversityinRocommenderSystoms</a>一文中深入分析了时间多样性对推荐系统的影响。他的<a target="_blank" rel="noopener" href="https://discovery.ucl.ac.uk/id/eprint/133957/1/133957.pdf">EvaluatingCollaborativeFilteringOverTime</a>论述了各种不同推荐算法是如何随时间演化的。</p>
+<p>如果要系统地研究与上下文推荐相关的工作，可以参考<a target="_blank" rel="noopener" href="https://pages.stern.nyu.edu/~atuzhili/">AlexanderTuzhii的工作</a>，他的团队对上下文推荐问题进行了深人研究。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/">推荐系统</a>
+                    
+                      <a class="hover-with-bg" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/04/14/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E8%B7%B5%EF%BC%88%E9%A1%B9%E4%BA%AE%EF%BC%89%E7%AC%AC%E5%85%AD%E7%AB%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">推荐系统（项亮）第六章</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/04/07/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F%E5%AE%9E%E8%B7%B5%EF%BC%88%E9%A1%B9%E4%BA%AE%EF%BC%89%E7%AC%AC%E5%9B%9B%E7%AB%A0/">
+                        <span class="hidden-mobile">推荐系统实践（项亮）第四章</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+        typing(title);
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>
