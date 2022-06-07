@@ -1,1 +1,1 @@
-# Joe Wang's homepage, a boy who is find himself.
+# Joe Wang's homepage, a boy who is finding himself.
